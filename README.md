@@ -3,7 +3,7 @@
 Paso 1:
 Ejecutar en consola del VS
 
-docker-compose -d
+docker-compose up -d
 
 Paso 2:
 Instalar node js desde su pagina
