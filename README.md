@@ -9,7 +9,7 @@ Paso 2:
 Instalar node js desde su pagina
 
 Paso 3:
-Descargar la extension de sql server, conectarse a la base de datos y ejecutar la consulta de la carpeta scripts
+Descargar la extension de sql server, conectarse a la base de datos con sql server o desde visual studio y ejecutar la consulta de la carpeta scripts
 
 Descargar la extension live server
 
