@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../../../node_modules\bootstrap\dist\js\bootstrap.bundle.min.js"></script>
+    <title>Productos</title>
+</head>
+<body>
+    <h1>Lista de productos</h1>
+    <button id="magia">Magia</button>
+    <h2>Buscar por ID</h2>
+    <form id="formId">
+        <input type="text" id="inputId">
+        <button type="submit">Enviar</button>
+    </form>
+    <ol id="listaProductos"></ol>
+
+    <h2>Buscar por nombre</h2>
+    <form id="formNombre">
+        <input type="text" id="inputNombre">
+        <button id="botonNombre" type="submit">Enviar</button>
+    </form>
+
+    <table id="tabla">
+        <tr>
+            <th>ID</th>
+            <th>Producto</th>
+            <th>idCategoria</th>
+            <th>PrecioCompra</th>
+            <th>PrecioVenta</th>
+            <th>Stock</th>
+        </tr>
+    </table>
+    
+    <script src="../js/indexJS.js"></script>
+</body>
+</html>
