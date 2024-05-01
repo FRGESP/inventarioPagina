@@ -100,7 +100,7 @@ formularioCrear,addEventListener("submit", async(f) =>{
         console.log(resJson);
     } else {
         alert(await res.text());
-        
+
     }
     
 })
@@ -109,7 +109,6 @@ formularioCrear,addEventListener("submit", async(f) =>{
 function agregarTabla(producto)
 {
     const tr = document.createElement("tr");
-    const th = document.createElement("th");
 
     tabla.appendChild(tr);
 
@@ -137,6 +136,22 @@ function agregarTabla(producto)
     const thStock = document.createElement("th");
     thStock.textContent = producto.Stock;
     tr.appendChild(thStock);
+
+    const botonEditar = document.createElement("button");
+    const iconoEditar = document.createElement("i");
+    
+    iconoEditar.classList.add("fa-solid","fa-pen-to-square");
+    botonEditar.classList.add("boton-icono");
+    botonEditar.appendChild(iconoEditar);
+    tr.appendChild(botonEditar);
+
+    const iconoEliminar = document.createElement("i");
+    iconoEliminar.classList.add("fa-solid", "fa-trash");
+    const botonEliminar = document.createElement("button");
+    botonEliminar.classList.add("boton-icono");
+    botonEliminar.appendChild(iconoEliminar);
+    tr.appendChild(botonEliminar);
+    
 
     return tr;
 
