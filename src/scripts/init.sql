@@ -1,49 +1,96 @@
---Creacion de la base de datos
+--CREACION DE LA BASE DE DATOS--
 create database Tienda;
 go
 use Tienda;
 
--- Creacion de las tablas
+--CREACION DE LAS TABLAS--
+create table Provedores(
+IdProvedor int not null identity primary key,
+Provedor varchar(50) not null,
+Telefono varchar(10) not null
+);
+
 create table Categorias(
-    idCategoria int not null IDENTITY PRIMARY KEY,
-    Categoria varchar(50) not null
-)
+IdCategoria int not null identity primary key,
+Nombre varchar(50) not null
+);
+
+create table Productos(
+IdProducto int not null identity primary key,
+Nombre varchar(50) not null,
+IdCategoria int foreign key references Categorias(idCategoria),
+PrecioCompra money not null check(PrecioCompra>=0),
+PrecioVenta money not null check(PrecioVenta>=0),
+Stock int default 0 not null check(Stock>=0),
+IdProvedor int foreign key references Provedores(IdProvedor)
+);
+
+create table Personas(
+IdPersona int not null identity primary key,
+Nombre varchar(50) not null,
+Apellidos varchar(100) not null,
+Direccion varchar(50) not null,
+Cuenta int,
+Telefono varchar(10) not null
+);
+
+create table Clientes(
+IdCliente int not null identity primary key,
+IdPersona int foreign key references Personas(IdPersona)
+);
+
+create table Empleados(
+IdEmpleado int not null identity primary key,
+IdPersona int foreign key references Personas(IdPersona),
+Sueldo money not null,
+Estatus varchar(50) check(Estatus IN('Empleado','Despedido','Ausente'))
+);
+
+create table Ventas(
+IdVenta int not null identity primary key,
+IdProducto int foreign key references Productos(IdProducto),
+Cantidad int not null,
+Ticket int not null,
+Monto money not null
+);
+
+create table DetalleVenta(
+IdDetalleVenta int not null identity primary key,
+Cantidad smallint not null,
+Ticket int not null,
+Total money not null check(Total>=0),
+Fecha date not null,
+IdCliente int foreign key references Clientes(IdCliente)
+);
+
+create table TempVenta(
+IdProducto int not null identity primary key,
+Cantidad smallint,
+Precio money
+);
+
+create table Devoluciones(
+IdDevolucion int not null identity primary key,
+IdDetalleVenta int foreign key references DetalleVenta(IdDetalleVenta),
+Fecha date not null
+);
+
+--SELECCION DE TABLAS--
+select * from Categorias
+select * from Clientes
+select * from DetalleVenta
+select * from Devoluciones
+select * from Empleados
+select * from Personas
+select * from Productos
+select * from Provedores
+select * from TempVenta
+select * from Ventas
 go
 
-CREATE TABLE Productos(
-    idProducto int not null IDENTITY PRIMARY KEY,
-    Producto varchar(50) not null,
-    idCategoria int FOREIGN KEY REFERENCES Categorias(idCategoria),
-    PrecioCompra money not null check(PrecioCompra>=0),
-    PrecioVenta money not null CHECK(PrecioVenta>=0),
-    Stock int DEFAULT 0 not NULL CHECK(Stock>=0)
-)
-go
+-----------------------------------------------STORE PROCEDURES----------------------------------------------
 
-CREATE TABLE Ventas(
-    idVenta int not null IDENTITY PRIMARY KEY,
-    Monto money not NULL,
-    Fecha DATE not null
-)
-go
-
-CREATE TABLE DetalleVenta(
-    idDetalle int not null IDENTITY PRIMARY KEY,
-    idVenta int FOREIGN KEY REFERENCES Ventas(idVenta),
-    idProducto int FOREIGN KEY REFERENCES Productos(idProducto),
-    Cantidad SMALLINT not null,
-    Total money not null CHECK(Total>=0)
-)
-go
-
-create table Temp_Ventas(
-    idProducto int,
-    cantidad SMALLINT,
-    Total money
-)
-go
-
--- Primer Procedure para agregar categorias
+-- PROCEDURE PARA AGREGAR CATEGORIAS
 CREATE PROCEDURE sp_insertCategoria(
     @categoria varchar(50)
 )
@@ -51,103 +98,183 @@ AS
 BEGIN
     INSERT into Categorias VALUES (UPPER(@categoria))
 END
-go
+GO
 
--- Segundo Procedure para agregar productos
+-- PROCEDURE PARA AGREGAR PROVEDORES
+CREATE PROCEDURE sp_insertProvedor(
+    @provedor varchar(50),
+    @telefono varchar(10)
+)
+AS
+BEGIN
+    INSERT into Provedores VALUES(UPPER(@provedor),@telefono)
+END
+GO
+
+-- PROCEDURE PARA AGREGAR PERSONAS
+CREATE PROCEDURE sp_insertPersonas(
+    @persona varchar(50),
+	@apellido varchar(100),
+	@direccion varchar(50),
+	@cuenta int,
+    @telefono varchar(10)
+)
+AS
+BEGIN
+    INSERT into Personas VALUES(UPPER(@persona),UPPER(@apellido),@direccion,@cuenta,@telefono)
+END
+GO
+
+-- PROCEDURE PARA AGREGAR PRODUCTOS
 CREATE PROCEDURE sp_insertProducto(
     @producto varchar(50),
     @idCategoria int,
 	@precioCompra money,
     @precioVenta money,
-    @stock int
+    @stock int,
+	@idProvedor int
 )
 AS
 BEGIN
-    INSERT into Productos VALUES(UPPER(@producto),@idCategoria,@precioCompra,@precioVenta,@stock)
-   
+    INSERT into Productos VALUES(UPPER(@producto),@idCategoria,@precioCompra,@precioVenta,@stock,@idProvedor)
 END
 GO
 
--- Tercer procedure para extraer y guardar los datos de venta 
-create PROCEDURE sp_TempVentas(
-    @idProducto int,
-    @cantidad SMALLINT
-)
+
+-----------------------------------------------FUNCIONES----------------------------------------------------------
+
+--FUNCION PARA APLICAR DESCUENTO MEDIANTE LA CANTIDAD
+CREATE OR ALTER FUNCTION DescuentoCantidad(@Producto varchar(50), @Cantidad int)
+RETURNS varchar(255)
 AS
 BEGIN
-    DECLARE @Total money
-    SELECT @Total=@cantidad*PrecioVenta from Productos where idProducto=@idProducto
-    INSERT into Temp_Ventas VALUES(@idProducto,@cantidad,@Total)
-
+	declare @result varchar(255);
+	declare @nombreProducto varchar(100);
+	SET @nombreProducto = (Select Nombre FROM Productos WHERE Nombre LIKE '%'+@Producto+'%');									
+	IF @nombreProducto IS NOT NULL
+		BEGIN
+		    declare @precioDescuento float
+			IF @Cantidad>=10
+			BEGIN
+			set @precioDescuento =(Select PrecioVenta-(PrecioVenta*25/100) from Productos where Nombre=@nombreProducto);
+			END
+			ELSE
+			IF @Cantidad>=5
+			BEGIN
+			set @precioDescuento =(Select PrecioVenta-(PrecioVenta*10/100) from Productos where Nombre=@nombreProducto);
+		    END
+			ELSE
+			IF @Cantidad>=3
+			BEGIN
+			set @precioDescuento =(Select PrecioVenta-(PrecioVenta*5/100) from Productos where Nombre=@nombreProducto);
+			END
+			ELSE
+			set @precioDescuento =(Select PrecioVenta from Productos where Nombre=@nombreProducto);
+		SET @result = 'EL PRODUCTO: '+@nombreProducto+' CON DESCUENTO TENDRA UN COSTO DE: '+CAST(@precioDescuento as varchar(50))+' PESOS';
+		END
+	ELSE
+		SET @result = 'NO SE HA ENCONTRADO EL PRODUCTO';
+	RETURN @result
 END
 GO
 
--- Cuarto procedure para llenar la tabla DetalleVenta
-create PROCEDURE sp_DetalleVenta
-AS
-BEGIN
-    DECLARE @idVenta int, @Monto money
-    insert into Ventas VALUES((select sum(total) from Temp_Ventas),GETDATE())
-    SET @idVenta =(SELECT IDENT_CURRENT('Ventas'))
-    insert into DetalleVenta(idProducto,Cantidad,Total)
-    SELECT * from Temp_Ventas
-    UPDATE DetalleVenta set idVenta=@idVenta where idDetalle=(SELECT IDENT_CURRENT('Ventas'));
-	DELETE from Temp_Ventas 
-END
-go
 
---Quinto procedure para restar el stock que se vendió
-create procedure sp_restarStock
-as
-begin
-	declare @idDetalle int, @idProducto int, @cantidad int,@cantidadActual int
 
-	set @idDetalle=(select IDENT_CURRENT('DetalleVenta'));
-	set @idProducto =(select idProducto from DetalleVenta where idDetalle=@idDetalle);
-	set @cantidad = (select Cantidad from DetalleVenta where idDetalle = @idDetalle);
-	set @cantidadActual = (select Stock from Productos where idProducto = @idProducto)
-	update Productos set Stock = @cantidadActual-@cantidad where idProducto=@idProducto;
-end;
-go
+-----------------------------------------------TRIGGERS----------------------------------------------------------
 
--- Sexto procedure que agrupa funciones anteriores y permite hacer la venta
-create procedure sp_RegistrarVenta(
-	@idProducto int,
-    @cantidad SMALLINT
+CREATE TABLE RegistroProducto(
+	idAproducto INT IDENTITY PRIMARY KEY,
+	idProducto INT FOREIGN KEY REFERENCES Productos(IdProducto),
+	Fecha DATE,
+	Accion VARCHAR(25),
+	Usuario VARCHAR(25),
 )
-as 
-begin
-	exec sp_TempVentas @idProducto,@cantidad;
-	exec sp_DetalleVenta;
-	exec sp_restarStock;
-end
-go
+GO
+
+CREATE TABLE RegistroPrecioProducto(
+	idAproducto INT IDENTITY PRIMARY KEY,
+	idProducto INT FOREIGN KEY REFERENCES Productos(IdProducto),
+	Fecha DATE,
+	Accion VARCHAR(25),
+	Usuario VARCHAR(25),
+	PrecioCompraAnterior MONEY,
+	PrecioCompraActual MONEY,
+	PrecioVentaAnterior MONEY,
+	PrecioVentaActual MONEY
+)
+GO
+ 
+--Insert--
+CREATE TRIGGER TR_InsertProducto
+ON Productos
+FOR INSERT
+AS
+SET NOCOUNT ON;
+DECLARE @idProducto INT
+SELECT @idProducto=idProducto FROM inserted
+INSERT INTO RegistroProducto VALUES(@idProducto,GETDATE(),'Insert',SYSTEM_USER)
+GO
+
+--Delete--
+CREATE TRIGGER TR_DeleteProducto
+ON Productos
+FOR DELETE
+AS
+SET NOCOUNT ON;
+DECLARE @idProducto INT
+SELECT @idProducto=idProducto FROM deleted
+INSERT INTO RegistroProducto VALUES(@idProducto,GETDATE(),'Delete',SYSTEM_USER)
+GO
+
+--Update--
+CREATE TRIGGER TR_UpdateProducto
+ON Productos
+FOR UPDATE
+AS
+SET NOCOUNT ON;
+DECLARE @idProducto INT
+SELECT @idProducto=idProducto FROM inserted
+INSERT INTO RegistroProducto VALUES(@idProducto,GETDATE(),'Update',SYSTEM_USER)
+GO
+
+--Update Stock--
+CREATE TRIGGER TR_UpdateInventarioProductos 
+ON Ventas
+FOR INSERT 
+AS
+SET NOCOUNT ON;
+UPDATE Productos SET Productos.Stock=Productos.Stock-inserted.Cantidad FROM inserted
+INNER JOIN Productos ON Productos.idProducto=inserted.idProducto
+GO
+
+--Update Precio--
+CREATE TRIGGER TR_UpdatePrecio
+ON Productos
+AFTER UPDATE
+AS
+SET NOCOUNT ON;
+DECLARE @idProducto INT
+DECLARE @PrecioCompraAnterior MONEY
+DECLARE @PrecioCompraActual MONEY
+DECLARE @PrecioVentaAnterior MONEY
+DECLARE @PrecioVentaActual MONEY
+SELECT @idProducto=idProducto FROM inserted
+SELECT @PrecioCompraAnterior=PrecioCompra FROM deleted
+SELECT @PrecioCompraActual=PrecioCompra FROM inserted
+SELECT @PrecioVentaAnterior=PrecioVenta FROM deleted
+SELECT @PrecioVentaActual=PrecioVenta FROM inserted
+INSERT INTO RegistroPrecioProducto VALUES(@idProducto,GETDATE(),'Update',SYSTEM_USER,@PrecioCompraAnterior,
+	@PrecioCompraActual,@PrecioVentaAnterior,@PrecioVentaActual)
+GO
 
 
--- Agreando categorias
-EXEC sp_insertCategoria 'Mascotas'
-EXEC sp_insertCategoria 'Embutidos'
 EXEC sp_insertCategoria 'Bebidas'
-EXEC sp_insertCategoria 'Limpieza'
-GO
+EXEC sp_insertProvedor 'Pepsi',8009016200;
+EXEC sp_insertProducto 'Pepsi 600 ml',1,14,16,100,1;
 
--- Agregando Productos
-EXEC sp_insertProducto 'Leche lala 1 lt ',1,22.50,25,100
-EXEC sp_insertProducto 'coca-cola 600 ml ',3,15,17.50,50
-EXEC sp_insertProducto 'Pepsi 600 ml',3,14,16,100;
 
-EXEC sp_insertProducto 'Agua Bonafont', 1, 10, 11, 500
-EXEC sp_insertProducto 'Leche Lala', 1, 15, 20, 300
-EXEC sp_insertProducto 'Pan Bimbo Integral', 2, 5, 7, 200
-EXEC sp_insertProducto 'Manzanas Fuji', 3, 12, 15, 150
-EXEC sp_insertProducto 'Coca-Cola 2L', 1, 7, 9, 250
-EXEC sp_insertProducto 'Huevos Blancos', 1, 18, 22, 100
-EXEC sp_insertProducto 'Arroz Blanco', 2, 6, 8, 350
-EXEC sp_insertProducto 'Atún en lata', 3, 10, 12, 180
-EXEC sp_insertProducto 'Yogurt Danone', 1, 7, 9, 280
-EXEC sp_insertProducto 'Carne de res', 4, 25, 30, 120
-EXEC sp_insertProducto 'Pasta de dientes Colgate', 1, 4, 6, 200
-EXEC sp_insertProducto 'Detergente Ace', 2, 8, 10, 300
-EXEC sp_insertProducto 'Café Nescafé', 3, 10, 13, 180
-EXEC sp_insertProducto 'Jabón Dove', 4, 3, 5, 400
-go
+
+select * from Categorias
+select * from Productos
+select * from Provedores
+select * from RegistroProducto
