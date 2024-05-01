@@ -8,7 +8,7 @@ export const getProducts =  async (req, res) => {
 }
 
 export const getProduct = async (req, res) => {
-    const pool = await getConnection();
+    try{const pool = await getConnection();
     const result = await pool.request()
     .input('id',sql.Int, req.params.id)
     .query("select * from Productos where idProducto = @id") 
@@ -16,8 +16,15 @@ export const getProduct = async (req, res) => {
     if (result.rowsAffected[0] === 0)
     {
         return res.status(404).json({message: "Product not found"})
+        
     }
     return res.json(result.recordset[0]);
+    }
+    catch(error)
+    {
+        console.error("Error:", error.message);
+        return res.status(404).json({message : error.message})
+    }
 };
 
 export const createProduct = async (req, res) => {

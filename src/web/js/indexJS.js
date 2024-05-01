@@ -6,6 +6,12 @@ const formularioId = document.getElementById("formId");
 const errores = document.getElementById("errores");
 const formularioNombre = document.getElementById("formNombre");
 const inputNombre = document.getElementById("inputNombre");
+const formularioCrear = document.getElementById("formCreate");
+const inputIdCategoria = document.getElementById("inputIdCategoria");
+const inputPrecioCompra = document.getElementById("inputPrecioCompra");
+const inputPrecioVenta = document.getElementById("inputPrecioVenta");
+const inputStock = document.getElementById("inputStock");
+const botonCrear = document.getElementById("botonCrear");
 
 API = "http://localhost:3100/"
 
@@ -69,6 +75,35 @@ formularioId.addEventListener("submit", async(e) =>{
         alert(await res.text());
     }
 });
+
+formularioCrear,addEventListener("submit", async(f) =>{
+    f.preventDefault();
+    limpiarTabla(tabla);
+    const res = await fetch(API+"productos/",{
+        method : "POST",
+        headers : {
+            "Content-Type" : "application/json"
+        },
+        body : JSON.stringify({
+            Producto : f.target[0].value,
+            idCategoria : f.target[1].value,
+            PrecioCompra : f.target[2].value,
+            PrecioVenta : f.target[3].value,
+            Stock : f.target[4].value
+        })
+    });
+    if(res.ok)
+    {
+        const resJson = await res.json();
+        const fila = agregarTabla(resJson);
+        tabla.appendChild(fila);
+        console.log(resJson);
+    } else {
+        alert(await res.text());
+        
+    }
+    
+})
 
 
 function agregarTabla(producto)
