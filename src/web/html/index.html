@@ -9,6 +9,7 @@
     <title>Productos</title>
 </head>
 <body>
+  
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Navbar</a>
@@ -33,32 +34,26 @@
           </div>
         </div>
       </nav>
-
-      <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    Launch static backdrop modal
-  </button>
-  
   <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Editar Producto</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <h1>Hola pa</h1>
+        <div class="modal-body" id="divVentana">
+          
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="editarProducto()">Enviar</button>
         </div>
       </div>
     </div>
   </div>
     <h1>Lista de productos</h1>
-    <button id="magia">Magia</button>
+    <button id="magia" onclick="mostrarTodo()">Magia</button>
     <h2>Buscar por ID</h2>
     <form id="formId">
         <input type="text" id="inputId">
@@ -72,12 +67,15 @@
         <button id="botonNombre" type="submit">Enviar</button>
     </form>
     <h2>Agregar Producto</h2>
-    <form class="formCreate">
-        <input type="text" class="inputProducto">
+    <!-- Aqui se agregan las alertas -->
+    <div id="alertas"></div>
+    <form id="formCreate">
+        <input type="text" class="inputNombre">
         <input type="text" class="inputIdCategoria">
         <input type="text" class="inputPrecioCompra">
         <input type="text" class="inputPrecioVenta">
         <input type="text" class="inputStock">
+        <input type="text" class="inputProvedor">
         <button type="submit" class="botonCrear">Enviar</button>
     </form>
 
@@ -89,10 +87,12 @@
             <th>PrecioCompra</th>
             <th>PrecioVenta</th>
             <th>Stock</th>
+            <th>IdProvedor</th>
             <th>Acciones</th>
         </tr>
     </table>
-    <button class="boton-icono">
+
+    <button class="boton-icono botonEditar" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
         <i class="fa-solid fa-pen-to-square"></i>
     </button>
     

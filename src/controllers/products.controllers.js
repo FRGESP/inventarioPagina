@@ -31,55 +31,69 @@ export const createProduct = async (req, res) => {
     console.log(req.body);
     const pool = await getConnection();
     const result = await pool.request()
-    .input('Producto',sql.VarChar,req.body.Producto)
-    .input('idCategoria',sql.Int,req.body.idCategoria)
-    .input('PrecioCompra',sql.Int,req.body.PrecioCompra)
-    .input('PrecioVenta',sql.Int,req.body.PrecioVenta)
+    .input('Nombre',sql.VarChar,req.body.Nombre)
+    .input('IdCategoria',sql.Int,req.body.IdCategoria)
+    .input('PrecioCompra',sql.Money,req.body.PrecioCompra)
+    .input('PrecioVenta',sql.Money,req.body.PrecioVenta)
     .input('Stock',sql.Int,req.body.Stock)
-    .query("insert into Productos values(@Producto, @idCategoria, @PrecioCompra, @PrecioVenta, @Stock); select scope_identity() as id;");
+    .input('IdProvedor',sql.Int,req.body.IdProvedor)
+    .query("EXEC sp_insertProducto @Nombre, @IdCategoria, @PrecioCompra,@PrecioVenta,@Stock,@IdProvedor; select scope_identity() as id;");
     console.log(result);
     res.json({
         id : result.recordset[0].id,
-        Producto : req.body.Producto,
-        idCategoria : req.body.idCategoria,
+        Nombre : req.body.Nombre,
+        IdCategoria : req.body.IdCategoria,
         PrecioCompra : req.body.PrecioCompra,
         PrecioVenta : req.body.PrecioVenta,
-        Stock : req.body.Stock
+        Stock : req.body.Stock,
+        IdProvedor : req.body.IdProvedor
     })
 };
 
 export const updateProduct= async (req, res) => {
-    const pool = await getConnection();
-
-    const result = await pool.request()
-    .input('id',sql.Int,req.params.id)
-    .input('Producto',sql.VarChar,req.body.Producto)
-    .input('idCategoria',sql.Int,req.body.idCategoria)
-    .input('PrecioCompra',sql.Int,req.body.PrecioCompra)
-    .input('PrecioVenta',sql.Int,req.body.PrecioVenta)
-    .input('Stock',sql.Int,req.body.Stock)
-    .query("update Productos set Producto = @Producto,idCategoria = @idCategoria, PrecioCompra = @PrecioCompra, PrecioVenta =  @PrecioVenta, Stock = @Stock where idProducto = @id");
-    console.log(result);
-    if (result.rowsAffected[0] === 0)
+    try
     {
-        return res.status(404).json({message: "Product not found"})
+        const pool = await getConnection();
+        const result = await pool.request()
+        .input('id',sql.Int, req.params.id)
+        .input('Nombre',sql.VarChar,req.body.Nombre)
+        .input('IdCategoria',sql.Int,req.body.IdCategoria)
+        .input('PrecioCompra',sql.Money,req.body.PrecioCompra)
+        .input('PrecioVenta',sql.Money,req.body.PrecioVenta)
+        .input('Stock',sql.Int,req.body.Stock)
+        .input('IdProvedor',sql.Int,req.body.IdProvedor)
+        .query("update Productos set Nombre = @Nombre,IdCategoria = @IdCategoria, PrecioCompra = @PrecioCompra, PrecioVenta =  @PrecioVenta, Stock = @Stock, IdProvedor = @IdProvedor where IdProducto = @id");
+        console.log(result);
+        if (result.rowsAffected[0] === 0)
+        {
+            return res.status(404).json({message: "Product not found"})
+        }
+        res.json({
+            id : req.params.id,
+            Nombre : req.body.Nombre,
+            IdCategoria : req.body.IdCategoria,
+            PrecioCompra : req.body.PrecioCompra,
+            PrecioVenta : req.body.PrecioVenta,
+            Stock : req.body.Stock,
+            IdProvedor : req.body.IdProvedor
+        })
     }
-    res.json({
-        id : req.params.id,
-        Producto : req.body.Producto,
-        idCategoria : req.body.idCategoria,
-        PrecioCompra : req.body.PrecioCompra,
-        PrecioVenta : req.body.PrecioVenta,
-        Stock : req.body.Stock
-    })
+    catch(error)
+    {
+        console.error("Error:", error.message);
+        return res.status(404).json({message : "La categoria no está registrada"})
+    }
+    
 };
 
 export const deleteProduct = async (req, res) => {
-    const pool = await getConnection();
+    try
+    {
+        const pool = await getConnection();
 
     const result = await pool.request()
     .input('id',sql.Int,req.params.id)
-    .query("delete from Productos where idProducto = @id");
+    .query("EXEC sp_borrarProducto @id");
 
     console.log(result);
 
@@ -87,7 +101,12 @@ export const deleteProduct = async (req, res) => {
     {
         return res.status(404).json({message: "Product not found"})
     }
-    return res.json({message : "Product deleted"});    
+    return res.json({message : "Product deleted"});  
+    } catch(error)
+    {
+        console.error("Error:", error.message);
+    }
+      
 };
 
 //Para obtener por nombre
@@ -96,8 +115,8 @@ export const getName = async (req,res) => {
     const pool =  await getConnection();
 
     const result = await pool.request()
-    .input('Producto',sql.VarChar,req.body.Producto)
-    .query("select * from Productos where Producto like '%'+@Producto+'%'");
+    .input('Nombre',sql.VarChar,req.body.Nombre)
+    .query("select * from Productos where Nombre like '%'+@Nombre+'%'");
     
     
 
