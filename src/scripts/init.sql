@@ -1,8 +1,7 @@
---CREACION DE LA BASE DE DATOS--
 create database Tienda;
 go
 use Tienda;
-
+go
 --CREACION DE LAS TABLAS--
 create table Provedores(
 IdProvedor int not null identity primary key,
@@ -18,7 +17,7 @@ Nombre varchar(50) not null
 create table Productos(
 IdProducto int not null identity primary key,
 Nombre varchar(50) not null,
-IdCategoria int foreign key references Categorias(idCategoria),
+IdCategoria int foreign key references Categorias(idCategoria) on delete set null,
 PrecioCompra money not null check(PrecioCompra>=0),
 PrecioVenta money not null check(PrecioVenta>=0),
 Stock int default 0 not null check(Stock>=0),
@@ -36,19 +35,19 @@ Telefono varchar(10) not null
 
 create table Clientes(
 IdCliente int not null identity primary key,
-IdPersona int foreign key references Personas(IdPersona)
+IdPersona int foreign key references Personas(IdPersona) on delete set null
 );
 
 create table Empleados(
 IdEmpleado int not null identity primary key,
-IdPersona int foreign key references Personas(IdPersona),
+IdPersona int foreign key references Personas(IdPersona) on delete set null,
 Sueldo money not null,
 Estatus varchar(50) check(Estatus IN('Empleado','Despedido','Ausente'))
 );
 
 create table Ventas(
 IdVenta int not null identity primary key,
-IdProducto int foreign key references Productos(IdProducto),
+IdProducto int foreign key references Productos(IdProducto) on delete set null,
 Cantidad int not null,
 Ticket int not null,
 Monto money not null
@@ -60,7 +59,7 @@ Cantidad smallint not null,
 Ticket int not null,
 Total money not null check(Total>=0),
 Fecha date not null,
-IdCliente int foreign key references Clientes(IdCliente)
+IdCliente int foreign key references Clientes(IdCliente) on delete set null
 );
 
 create table TempVenta(
@@ -71,7 +70,7 @@ Precio money
 
 create table Devoluciones(
 IdDevolucion int not null identity primary key,
-IdDetalleVenta int foreign key references DetalleVenta(IdDetalleVenta),
+IdDetalleVenta int foreign key references DetalleVenta(IdDetalleVenta) on delete set null,
 Fecha date not null
 );
 
@@ -108,6 +107,15 @@ CREATE PROCEDURE sp_insertProvedor(
 AS
 BEGIN
     INSERT into Provedores VALUES(UPPER(@provedor),@telefono)
+END
+GO
+
+CREATE PROCEDURE sp_borrarProducto(
+	@id int
+)
+AS
+BEGIN
+	DELETE FROM Productos where IdProducto = @id;
 END
 GO
 
@@ -184,7 +192,7 @@ GO
 
 CREATE TABLE RegistroProducto(
 	idAproducto INT IDENTITY PRIMARY KEY,
-	idProducto INT FOREIGN KEY REFERENCES Productos(IdProducto),
+	idProducto INT,
 	Fecha DATE,
 	Accion VARCHAR(25),
 	Usuario VARCHAR(25),
@@ -193,7 +201,7 @@ GO
 
 CREATE TABLE RegistroPrecioProducto(
 	idAproducto INT IDENTITY PRIMARY KEY,
-	idProducto INT FOREIGN KEY REFERENCES Productos(IdProducto),
+	idProducto INT FOREIGN KEY REFERENCES Productos(IdProducto) on delete set null,
 	Fecha DATE,
 	Accion VARCHAR(25),
 	Usuario VARCHAR(25),
@@ -271,10 +279,3 @@ GO
 EXEC sp_insertCategoria 'Bebidas'
 EXEC sp_insertProvedor 'Pepsi',8009016200;
 EXEC sp_insertProducto 'Pepsi 600 ml',1,14,16,100,1;
-
-
-
-select * from Categorias
-select * from Productos
-select * from Provedores
-select * from RegistroProducto
