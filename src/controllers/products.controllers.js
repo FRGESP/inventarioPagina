@@ -28,26 +28,31 @@ export const getProduct = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-    console.log(req.body);
-    const pool = await getConnection();
-    const result = await pool.request()
-    .input('Nombre',sql.VarChar,req.body.Nombre)
-    .input('IdCategoria',sql.Int,req.body.IdCategoria)
-    .input('PrecioCompra',sql.Money,req.body.PrecioCompra)
-    .input('PrecioVenta',sql.Money,req.body.PrecioVenta)
-    .input('Stock',sql.Int,req.body.Stock)
-    .input('IdProvedor',sql.Int,req.body.IdProvedor)
-    .query("EXEC sp_insertProducto @Nombre, @IdCategoria, @PrecioCompra,@PrecioVenta,@Stock,@IdProvedor; select scope_identity() as id;");
-    console.log(result);
-    res.json({
-        id : result.recordset[0].id,
-        Nombre : req.body.Nombre,
-        IdCategoria : req.body.IdCategoria,
-        PrecioCompra : req.body.PrecioCompra,
-        PrecioVenta : req.body.PrecioVenta,
-        Stock : req.body.Stock,
-        IdProvedor : req.body.IdProvedor
-    })
+    try {
+        console.log(req.body);
+        const pool = await getConnection();
+        const result = await pool.request()
+        .input('Nombre',sql.VarChar,req.body.Nombre)
+        .input('IdCategoria',sql.Int,req.body.IdCategoria)
+        .input('PrecioCompra',sql.Money,req.body.PrecioCompra)
+        .input('PrecioVenta',sql.Money,req.body.PrecioVenta)
+        .input('Stock',sql.Int,req.body.Stock)
+        .input('IdProvedor',sql.Int,req.body.IdProvedor)
+        .query("EXEC sp_insertProducto @Nombre, @IdCategoria, @PrecioCompra,@PrecioVenta,@Stock,@IdProvedor; select scope_identity() as id;");
+        console.log(result);
+        res.json({
+            IdProducto : result.recordset[0].id,
+            Nombre : req.body.Nombre,
+            IdCategoria : req.body.IdCategoria,
+            PrecioCompra : req.body.PrecioCompra,
+            PrecioVenta : req.body.PrecioVenta,
+            Stock : req.body.Stock,
+            IdProvedor : req.body.IdProvedor
+        })
+    }catch(error){
+        console.error("Error:", error.message);
+        return res.status(404).json({message : error.message});
+    }
 };
 
 export const updateProduct= async (req, res) => {

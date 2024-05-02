@@ -34,7 +34,6 @@ async function mostrarTodo() {
     else{
         console.log("No hay productos");
     }
-    tabla.classList.add("table", "table-sm");
 };
 
 formularioNombre.addEventListener("submit", async (f) => {
@@ -103,8 +102,9 @@ formularioCrear.addEventListener("submit", async(f) =>{
         const fila = agregarTabla(resJson);
         tabla.appendChild(fila);
         console.log(resJson);
+        crearAlerta("success","El producto se creó correctamente")
     } else {
-        crearAlerta("danger","Algo ha salido mal");
+        crearAlerta("danger","No se pudo agregar el producto. Verifique el provedor esté registrado");
     }
     
 });
