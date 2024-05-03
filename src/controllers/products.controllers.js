@@ -21,7 +21,7 @@ export const getProduct = async (req, res) => {
     return res.json(result.recordset[0]);
     }
     catch(error)
-    {
+    { 
         console.error("Error:", error.message);
         return res.status(404).json({message : error.message})
     }

@@ -10,18 +10,15 @@ import {
 
 const router = Router();
 
+// Rutas productos
 router.get("/productos", getProducts);
-
 router.get("/productos/:id", getProduct);
-
 router.post("/productos", createProduct);
-
 router.put("/productos/:id", updateProduct);
-
 router.delete("/productos/:id", deleteProduct);
-
-//Obtener por nombre
-
 router.post("/productosNombre",getName);
+
+// Rutas Categorias
+
 
 export default router;

@@ -38,6 +38,8 @@ IdCliente int not null identity primary key,
 IdPersona int foreign key references Personas(IdPersona) on delete set null
 );
 
+
+
 create table Empleados(
 IdEmpleado int not null identity primary key,
 IdPersona int foreign key references Personas(IdPersona) on delete set null,
@@ -49,6 +51,7 @@ create table Ventas(
 IdVenta int not null identity primary key,
 IdProducto int foreign key references Productos(IdProducto) on delete set null,
 Cantidad int not null,
+Precio int not null,
 Ticket int not null,
 Monto money not null
 );
@@ -56,17 +59,15 @@ Monto money not null
 create table DetalleVenta(
 IdDetalleVenta int not null identity primary key,
 Cantidad smallint not null,
-Ticket int not null,
 Total money not null check(Total>=0),
 Fecha date not null,
 IdCliente int foreign key references Clientes(IdCliente) on delete set null
 );
 
-create table TempVenta(
-IdProducto int not null identity primary key,
-Cantidad smallint,
-Precio money
-);
+create table Temp_Ventas(
+    IdCliente int
+)
+go
 
 create table Devoluciones(
 IdDevolucion int not null identity primary key,
@@ -83,7 +84,6 @@ select * from Empleados
 select * from Personas
 select * from Productos
 select * from Provedores
-select * from TempVenta
 select * from Ventas
 go
 
@@ -132,6 +132,7 @@ BEGIN
     INSERT into Personas VALUES(UPPER(@persona),UPPER(@apellido),@direccion,@cuenta,@telefono)
 END
 GO
+
 
 -- PROCEDURE PARA AGREGAR PRODUCTOS
 CREATE PROCEDURE sp_insertProducto(
@@ -279,3 +280,50 @@ GO
 EXEC sp_insertCategoria 'Bebidas'
 EXEC sp_insertProvedor 'Pepsi',8009016200;
 EXEC sp_insertProducto 'Pepsi 600 ml',1,14,16,100,1;
+
+go
+CREATE PROCEDURE sp_Ventas(
+	@IdProducto int,
+	@Cantidad smallint,
+	@Precio money
+)
+AS
+BEGIN
+	
+	declare @Monto money, @NumTicket int;
+	select @Monto = @Cantidad*@Precio;
+	set @NumTicket = (SELECT IDENT_CURRENT('DetalleVenta')+1);
+
+	insert into Ventas values (@IdProducto,@Cantidad,@Precio,@NumTicket,@Monto);
+
+END
+go
+
+create Procedure sp_DetalleVenta
+as
+begin
+	
+	declare @CantidadTotal int, @Total money, @Id int, @IdCliente int;
+	set @Id = (SELECT IDENT_CURRENT('DetalleVenta')+1);
+	set @CantidadTotal = (select SUM(Cantidad) from Ventas where Ticket = @Id);
+	set @Total = (select SUM(Monto) from Ventas where Ticket = @Id)
+	set @IdCliente = (select IdCliente from Temp_Ventas);
+	insert into DetalleVenta values (@CantidadTotal,@Total,GETDATE(),@IdCliente)
+	DELETE from Temp_Ventas;
+end;
+go
+
+create Procedure sp_TempVentas(@IdCliente int)
+as
+begin 
+	insert into Temp_Ventas values (@IdCliente)
+end;
+go
+
+select * from Ventas
+
+/*EXEC sp_TempVentas 1
+
+EXEC sp_Ventas 1, 2, 20
+
+EXEC sp_DetalleVenta */
