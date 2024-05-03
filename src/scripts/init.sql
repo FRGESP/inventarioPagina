@@ -9,9 +9,9 @@ Provedor varchar(50) not null,
 Telefono varchar(10) not null
 );
 
-create table Categorias(
+CREATE table Categorias(
 IdCategoria int not null identity primary key,
-Nombre varchar(50) not null
+Categoria varchar(50) not null
 );
 
 create table Productos(
@@ -148,7 +148,26 @@ BEGIN
     INSERT into Productos VALUES(UPPER(@producto),@idCategoria,@precioCompra,@precioVenta,@stock,@idProvedor)
 END
 GO
-
+--PROCEDURE PARA CLIENTES
+CREATE PROCEDURE sp_insertClientes(
+	@idPersona INT
+)
+AS
+BEGIN
+    INSERT into Clientes VALUES(@idPersona)
+END
+GO
+--PROCEDURE PARA EMPLEADOS
+CREATE PROCEDURE sp_inserteEmpleados(
+	@idPersona int,
+	@Sueldo money,
+	@Estatus VARCHAR(50)
+)
+AS
+BEGIN
+    INSERT INTO Empleados VALUES(@idPersona, @Sueldo, @Estatus)
+END
+GO
 
 -----------------------------------------------FUNCIONES----------------------------------------------------------
 
@@ -327,3 +346,18 @@ select * from Ventas
 EXEC sp_Ventas 1, 2, 20
 
 EXEC sp_DetalleVenta */
+
+-------------------------------------VISTAS--------------------------------------------------------------------
+use Tienda
+GO
+CREATE VIEW ProductosVista 
+AS
+	SELECT p.Nombre, p.PrecioCompra, p.PrecioVenta, p.Stock, c.Categoria, pr.Provedor from Productos AS p INNER JOIN Categorias AS c
+	ON p.IdCategoria=c.IdCategoria 
+	INNER JOIN Provedores AS pr 
+	ON p.IdProvedor=pr.IdProvedor
+
+GO
+
+SELECT * FROM ProductosVista
+
