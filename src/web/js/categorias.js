@@ -11,7 +11,7 @@ API = "http://localhost:3100/";
 
 
 async function mostrarTodo() {
-    const res = await fetch(API+"productosVista/");
+    const res = await fetch(API+"categorias/");
     if(res.ok)
     {
         const resJson = await res.json();
@@ -279,35 +279,14 @@ function agregarTabla(producto)
     tabla.appendChild(tr);
 
     const thID = document.createElement("th");
-    thID.textContent = producto.IdProducto;
+    thID.textContent = producto.IdCategoria;
     thID.setAttribute("scope","row");
     console.log(producto.IdProducto);
     tr.appendChild(thID);
 
     const thProducto = document.createElement("td");
-    thProducto.textContent = producto.Nombre;
+    thProducto.textContent = producto.Categoria;
     tr.appendChild(thProducto);
-
-    const thIdCategoria = document.createElement("td");
-    thIdCategoria.textContent = producto.Categoria;
-    tr.appendChild(thIdCategoria);
-
-    const thPrecioCompra = document.createElement("td");
-    thPrecioCompra.textContent = producto.PrecioCompra;
-    tr.appendChild(thPrecioCompra);
-
-    const ththPreciVenta = document.createElement("td");
-    ththPreciVenta.textContent = producto.PrecioVenta;
-    tr.appendChild(ththPreciVenta);
-
-    
-    const thStock = document.createElement("td");
-    thStock.textContent = producto.Stock;
-    tr.appendChild(thStock);
-
-    const thIdProveedor = document.createElement("td");
-    thIdProveedor.textContent = producto.Proveedor;
-    tr.append(thIdProveedor);
 
     const botonEditar = document.createElement("button");
     const iconoEditar = document.createElement("i");
@@ -317,7 +296,7 @@ function agregarTabla(producto)
     botonEditar.classList.add("boton-icono");
     botonEditar.onclick = obtenerProducto;
     botonEditar.appendChild(iconoEditar);
-    botonEditar.setAttribute('editar-id',producto.IdProducto);
+    botonEditar.setAttribute('editar-id',producto.IdCategoria);
     botonEditar.setAttribute('data-bs-toggle',"modal");
     botonEditar.setAttribute('data-bs-target',"#staticBackdrop");
     divBotones.appendChild(botonEditar);
@@ -326,7 +305,7 @@ function agregarTabla(producto)
     iconoEliminar.classList.add("fa-solid", "fa-trash");
     const botonEliminar = document.createElement("button");
     botonEliminar.classList.add("boton-icono");
-    botonEliminar.setAttribute("borrar-id",producto.IdProducto);
+    botonEliminar.setAttribute("borrar-id",producto.IdCategoria);
     botonEliminar.onclick = borrarProducto;
     botonEliminar.appendChild(iconoEliminar);
     divBotones.appendChild(botonEliminar);

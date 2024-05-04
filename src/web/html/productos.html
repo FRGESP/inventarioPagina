@@ -92,7 +92,7 @@
 
     
 
-    <!-- Modal -->
+    <!-- Modal Para Editar-->
     <div
       class="modal"
       id="staticBackdrop"
@@ -137,8 +137,7 @@
       </div>
     </div>
 
-    <!-- Modal para crear Productos -->
-
+    <!-- Modal para Crear -->
     <div
       class="modal"
       id="modalCrearProducto"
@@ -183,11 +182,10 @@
       </div>
     </div>
     <h1 class="text-center">Productos</h1>
-    <!-- Tablas -->
    
     <div id="alertas"></div>
-
     
+    <!-- Barra de busqueda -->
     <div class="container">
         <div class="row justify-content-center text-center">
           <div class="col-md-auto">
@@ -221,24 +219,29 @@
         </div>
       </div>
 
-      <!-- Formulario -->
       
+<!-- Tabla Principal -->
+<div class="row justify-content-center">
+    <div class="col-md-11">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Precio de Compra</th>
+            <th scope="col">Precio de Venta</th>
+            <th scope="col">Stock</th>
+            <th scope="col">Proveedor</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+      </table>
+    </div>
+  </div>
 
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Producto</th>
-          <th scope="col">Categoria</th>
-          <th scope="col">Precio de Compra</th>
-          <th scope="col">Precio de Venta</th>
-          <th scope="col">Stock</th>
-          <th scope="col">Proveedor</th>
-          <th scope="col">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tabla"></tbody>
-    </table>
+
     <script src="../js/productos.js"></script>
   </body>
 </html>
