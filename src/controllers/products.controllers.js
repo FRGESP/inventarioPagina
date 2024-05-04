@@ -37,8 +37,8 @@ export const createProduct = async (req, res) => {
         .input('PrecioCompra',sql.Money,req.body.PrecioCompra)
         .input('PrecioVenta',sql.Money,req.body.PrecioVenta)
         .input('Stock',sql.Int,req.body.Stock)
-        .input('IdProvedor',sql.Int,req.body.IdProvedor)
-        .query("EXEC sp_insertProducto @Nombre, @IdCategoria, @PrecioCompra,@PrecioVenta,@Stock,@IdProvedor; select scope_identity() as id;");
+        .input('IdProveedor',sql.Int,req.body.IdProveedor)
+        .query("EXEC sp_insertProducto @Nombre, @IdCategoria, @PrecioCompra,@PrecioVenta,@Stock,@IdProveedor; SELECT IDENT_CURRENT('Productos') as id;");
         console.log(result);
         res.json({
             IdProducto : result.recordset[0].id,
@@ -47,7 +47,7 @@ export const createProduct = async (req, res) => {
             PrecioCompra : req.body.PrecioCompra,
             PrecioVenta : req.body.PrecioVenta,
             Stock : req.body.Stock,
-            IdProvedor : req.body.IdProvedor
+            IdProveedor : req.body.IdProveedor
         })
     }catch(error){
         console.error("Error:", error.message);
@@ -66,22 +66,23 @@ export const updateProduct= async (req, res) => {
         .input('PrecioCompra',sql.Money,req.body.PrecioCompra)
         .input('PrecioVenta',sql.Money,req.body.PrecioVenta)
         .input('Stock',sql.Int,req.body.Stock)
-        .input('IdProvedor',sql.Int,req.body.IdProvedor)
-        .query("update Productos set Nombre = @Nombre,IdCategoria = @IdCategoria, PrecioCompra = @PrecioCompra, PrecioVenta =  @PrecioVenta, Stock = @Stock, IdProvedor = @IdProvedor where IdProducto = @id");
+        .input('IdProveedor',sql.Int,req.body.IdProveedor)
+        .query("update Productos set Nombre = @Nombre,IdCategoria = @IdCategoria, PrecioCompra = @PrecioCompra, PrecioVenta =  @PrecioVenta, Stock = @Stock, IdProveedor = @IdProveedor where IdProducto = @id");
         console.log(result);
         if (result.rowsAffected[0] === 0)
         {
             return res.status(404).json({message: "Product not found"})
         }
-        res.json({
-            id : req.params.id,
-            Nombre : req.body.Nombre,
-            IdCategoria : req.body.IdCategoria,
-            PrecioCompra : req.body.PrecioCompra,
-            PrecioVenta : req.body.PrecioVenta,
-            Stock : req.body.Stock,
-            IdProvedor : req.body.IdProvedor
-        })
+        // res.json({
+        //     id : req.params.id,
+        //     Nombre : req.body.Nombre,
+        //     IdCategoria : req.body.IdCategoria,
+        //     PrecioCompra : req.body.PrecioCompra,
+        //     PrecioVenta : req.body.PrecioVenta,
+        //     Stock : req.body.Stock,
+        //     IdProveedor : req.body.IdProveedor
+        // })
+        return res.json({message : "Product Updated"});
     }
     catch(error)
     {
@@ -121,7 +122,7 @@ export const getName = async (req,res) => {
 
     const result = await pool.request()
     .input('Nombre',sql.VarChar,req.body.Nombre)
-    .query("select * from Productos where Nombre like '%'+@Nombre+'%'");
+    .query("select * from ProductosVista where Nombre like '%'+@Nombre+'%'");
     
     
 
@@ -131,4 +132,54 @@ export const getName = async (req,res) => {
         return res.status(404).json({message : "Product not found"});
     }
     return res.json(result.recordset);
+}
+
+export const getProductsVista =  async (req, res) => {
+    try {
+        const pool = await getConnection();
+    const result = await pool.request().query('select * from ProductosVista');
+    res.json(result.recordset);
+    }catch(error) {
+        console.error("Error:", error.message);
+    }
+}
+
+export const getProductVista = async (req, res) => {
+    try{const pool = await getConnection();
+    const result = await pool.request()
+    .input('id',sql.Int, req.params.id)
+    .query("select * from ProductosVista where idProducto = @id") 
+
+    if (result.rowsAffected[0] === 0)
+    {
+        return res.status(404).json({message: "Product not found"})
+        
+    }
+    return res.json(result.recordset[0]);
+    }
+    catch(error)
+    { 
+        console.error("Error:", error.message);
+        return res.status(404).json({message : error.message})
+    }
+};
+
+export const getNombresProveedores =  async (req, res) => {
+    try {
+        const pool = await getConnection();
+    const result = await pool.request().query('select * from NombresProveedores');
+    res.json(result.recordset);
+    }catch(error) {
+        console.error("Error:", error.message);
+    }
+}
+
+export const getNombresCategorias =  async (req, res) => {
+    try {
+        const pool = await getConnection();
+    const result = await pool.request().query('select * from NombresCategorias');
+    res.json(result.recordset);
+    }catch(error) {
+        console.error("Error:", error.message);
+    }
 }

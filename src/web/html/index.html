@@ -10,30 +10,40 @@
 </head>
 <body>
   
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Navbar</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-              </li>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="./inicio.html">Inicio</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="./facturas.html">Facturas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="./ventas.html">Devoluciones</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Tablas
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="./productos.html">Productos</a></li>
+              <li><a class="dropdown-item" href="./categorias.html">Categorias</a></li>
+              <li><a class="dropdown-item" href="./proveedores.html">Proveedores</a></li>
+              <li><a class="dropdown-item" href="./personas.html">Personas</a></li>
+              <li><a class="dropdown-item" href="./clientes.html">Clientes</a></li>
+              <li><a class="dropdown-item" href="./ventas.html">Ventas</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="./registroPrecios.html">Registros Precios</a></li>
+              <li><a class="dropdown-item" href="./registroProductos.html">Registros Productos</a></li>
             </ul>
-          </div>
-        </div>
-      </nav>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   <!-- Modal -->
   <div class="modal" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -53,6 +63,9 @@
     </div>
   </div>
     <h1>Lista de productos</h1>
+    <!-- Tablas -->
+    
+
     <button id="magia" onclick="mostrarTodo()">Magia</button>
     <h2>Buscar por ID</h2>
     <form id="formId">
@@ -79,19 +92,22 @@
         <button type="submit" class="botonCrear">Enviar</button>
     </form>
 
-    <table id="tabla" class="table table-sm">
+    <table  class="table table-striped">
+      <thead>
         <tr>
-            <th>ID</th>
-            <th>Producto</th>
-            <th>idCategoria</th>
-            <th>PrecioCompra</th>
-            <th>PrecioVenta</th>
-            <th>Stock</th>
-            <th>IdProvedor</th>
-            <th>Acciones</th>
-        </tr>
+          <th scope="col">ID</th>
+          <th scope="col">Producto</th>
+          <th scope="col">idCategoria</th>
+          <th scope="col">PrecioCompra</th>
+          <th scope="col">PrecioVenta</th>
+          <th scope="col">Stock</th>
+          <th scope="col">IdProveedor</th>
+          <th scope="col">Acciones</th>
+      </tr>
+      </thead>
+      <tbody id="tabla"></tbody>
+        
     </table>
-    
     <script src="../js/indexJS.js"></script>
 </body>
 </html>

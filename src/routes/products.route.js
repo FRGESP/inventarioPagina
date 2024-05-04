@@ -3,8 +3,12 @@ import {
   createProduct,
   deleteProduct,
   getName,
+  getNombresCategorias,
+  getNombresProveedores,
   getProduct,
+  getProductVista,
   getProducts,
+  getProductsVista,
   updateProduct,
 } from "../controllers/products.controllers.js";
 
@@ -18,7 +22,12 @@ router.put("/productos/:id", updateProduct);
 router.delete("/productos/:id", deleteProduct);
 router.post("/productosNombre",getName);
 
-// Rutas Categorias
+// Vistas
+
+router.get("/productosVista",getProductsVista);
+router.get("/productosVista/:id",getProductVista)
+router.get("/nombresProveedores",getNombresProveedores)
+router.get("/nombresCategorias",getNombresCategorias)
 
 
 export default router;

@@ -3,9 +3,9 @@ go
 use Tienda;
 go
 --CREACION DE LAS TABLAS--
-create table Provedores(
-IdProvedor int not null identity primary key,
-Provedor varchar(50) not null,
+create table Proveedores(
+IdProveedor int not null identity primary key,
+Proveedor varchar(50) not null,
 Telefono varchar(10) not null
 );
 
@@ -21,7 +21,7 @@ IdCategoria int foreign key references Categorias(idCategoria) on delete set nul
 PrecioCompra money not null check(PrecioCompra>=0),
 PrecioVenta money not null check(PrecioVenta>=0),
 Stock int default 0 not null check(Stock>=0),
-IdProvedor int foreign key references Provedores(IdProvedor)
+IdProveedor int foreign key references Proveedores(IdProveedor)
 );
 
 create table Personas(
@@ -29,7 +29,7 @@ IdPersona int not null identity primary key,
 Nombre varchar(50) not null,
 Apellidos varchar(100) not null,
 Direccion varchar(50) not null,
-Cuenta int,
+Cuenta varchar(20),
 Telefono varchar(10) not null
 );
 
@@ -83,7 +83,7 @@ select * from Devoluciones
 select * from Empleados
 select * from Personas
 select * from Productos
-select * from Provedores
+select * from Proveedores
 select * from Ventas
 go
 
@@ -99,14 +99,14 @@ BEGIN
 END
 GO
 
--- PROCEDURE PARA AGREGAR PROVEDORES
-CREATE PROCEDURE sp_insertProvedor(
-    @provedor varchar(50),
+-- PROCEDURE PARA AGREGAR PROVEEDORES
+CREATE PROCEDURE sp_insertProveedor(
+    @proveedor varchar(50),
     @telefono varchar(10)
 )
 AS
 BEGIN
-    INSERT into Provedores VALUES(UPPER(@provedor),@telefono)
+    INSERT into Proveedores VALUES(UPPER(@proveedor),@telefono)
 END
 GO
 
@@ -124,7 +124,7 @@ CREATE PROCEDURE sp_insertPersonas(
     @persona varchar(50),
 	@apellido varchar(100),
 	@direccion varchar(50),
-	@cuenta int,
+	@cuenta varchar,
     @telefono varchar(10)
 )
 AS
@@ -134,6 +134,7 @@ END
 GO
 
 
+
 -- PROCEDURE PARA AGREGAR PRODUCTOS
 CREATE PROCEDURE sp_insertProducto(
     @producto varchar(50),
@@ -141,11 +142,11 @@ CREATE PROCEDURE sp_insertProducto(
 	@precioCompra money,
     @precioVenta money,
     @stock int,
-	@idProvedor int
+	@idProveedor int
 )
 AS
 BEGIN
-    INSERT into Productos VALUES(UPPER(@producto),@idCategoria,@precioCompra,@precioVenta,@stock,@idProvedor)
+    INSERT into Productos VALUES(UPPER(@producto),@idCategoria,@precioCompra,@precioVenta,@stock,@idProveedor)
 END
 GO
 --PROCEDURE PARA CLIENTES
@@ -295,21 +296,27 @@ INSERT INTO RegistroPrecioProducto VALUES(@idProducto,GETDATE(),'Update',SYSTEM_
 	@PrecioCompraActual,@PrecioVentaAnterior,@PrecioVentaActual)
 GO
 
-
 EXEC sp_insertCategoria 'Bebidas'
-EXEC sp_insertProvedor 'Pepsi',8009016200;
+EXEC sp_insertCategoria 'Comida'
+EXEC sp_insertProveedor 'Pepsi','8009016200';
+EXEC sp_insertProveedor 'Sabritas','4545454545454';
 EXEC sp_insertProducto 'Pepsi 600 ml',1,14,16,100,1;
+EXEC sp_insertProducto 'Doritos Nacho',2,10,14,250,2;
+EXEC sp_insertProducto 'Pan Dulce',2,9,12,15,2;
+
+EXEC sp_insertPersonas 'Juan','Pérez','Calle Guadalupe 54','454545','4545454545454'
+EXEC sp_insertClientes 1
 
 go
 CREATE PROCEDURE sp_Ventas(
 	@IdProducto int,
-	@Cantidad smallint,
-	@Precio money
+	@Cantidad smallint
 )
 AS
 BEGIN
 	
-	declare @Monto money, @NumTicket int;
+	declare @Monto money, @NumTicket int, @Precio money;
+	set @Precio = (select PrecioVenta from Productos where IdProducto = @IdProducto)
 	select @Monto = @Cantidad*@Precio;
 	set @NumTicket = (SELECT IDENT_CURRENT('DetalleVenta')+1);
 
@@ -339,25 +346,36 @@ begin
 end;
 go
 
-select * from Ventas
+select * from DetalleVenta
 
 /*EXEC sp_TempVentas 1
 
-EXEC sp_Ventas 1, 2, 20
+EXEC sp_Ventas 1, 2
 
 EXEC sp_DetalleVenta */
 
 -------------------------------------VISTAS--------------------------------------------------------------------
-use Tienda
 GO
 CREATE VIEW ProductosVista 
 AS
-	SELECT p.Nombre, p.PrecioCompra, p.PrecioVenta, p.Stock, c.Categoria, pr.Provedor from Productos AS p INNER JOIN Categorias AS c
+	SELECT p.IdProducto ,p.Nombre,c.Categoria, p.PrecioCompra, p.PrecioVenta, p.Stock, pr.Proveedor from Productos AS p INNER JOIN Categorias AS c
 	ON p.IdCategoria=c.IdCategoria 
-	INNER JOIN Provedores AS pr 
-	ON p.IdProvedor=pr.IdProvedor
+	INNER JOIN Proveedores AS pr 
+	ON p.IdProveedor=pr.IdProveedor
 
 GO
 
-SELECT * FROM ProductosVista
+CREATE VIEW NombresProveedores
+as
+ select IdProveedor as Id, Proveedor as Nombre from Proveedores;
+go
+
+CREATE VIEW NombresCategorias
+as
+ select IdCategoria as Id, Categoria as Nombre from Categorias;
+go
+
+go
+
+
 

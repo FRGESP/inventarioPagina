@@ -17,6 +17,7 @@ const botonCrear = document.getElementById("botonCrear");
 const div = document.getElementById("divVentana");
 const alertas = document.getElementById("alertas");
 
+
 API = "http://localhost:3100/"
 
 async function mostrarTodo() {
@@ -59,55 +60,9 @@ formularioNombre.addEventListener("submit", async (f) => {
     }else
     {
         console.log("Algo salio mal");
+        crearAlerta("danger","Producto no encontrado")
     }
 })
-
-formularioId.addEventListener("submit", async(e) =>{
-    e.preventDefault();
-    limpiarTabla(tabla);
-    console.log(inputId.value);
-    const res = await fetch(API+"productos/"+inputId.value);
-    if(res.ok)
-    {
-        const resJson = await res.json();
-        const fila = agregarTabla(resJson);
-        tabla.appendChild(fila);
-        console.log(resJson);
-    }else
-    {
-        crearAlerta("danger","El producto no se ha encontrado. Vuelva a intentarlo");
-    }
-});
-
-formularioCrear.addEventListener("submit", async(f) =>{
-    f.preventDefault();
-    limpiarTabla(tabla);
-    const res = await fetch(API+"productos/",{
-        method : "POST",
-        headers : {
-            "Content-Type" : "application/json"
-        },
-        body : JSON.stringify({
-            Nombre : f.target[0].value,
-            IdCategoria : f.target[1].value,
-            PrecioCompra : f.target[2].value,
-            PrecioVenta : f.target[3].value,
-            Stock : f.target[4].value,
-            IdProvedor : f.target[5].value
-        })
-    });
-    if(res.ok)
-    {
-        const resJson = await res.json();
-        const fila = agregarTabla(resJson);
-        tabla.appendChild(fila);
-        console.log(resJson);
-        crearAlerta("success","El producto se creó correctamente")
-    } else {
-        crearAlerta("danger","No se pudo agregar el producto. Verifique el provedor esté registrado");
-    }
-    
-});
 
 async function obtenerProducto() {
     div.innerHTML = '';
@@ -134,7 +89,7 @@ async function editarProducto() {
             PrecioCompra : document.getElementById("inPrecioCompra").value,
             PrecioVenta : document.getElementById("inPrecioVenta").value,
             Stock : document.getElementById("inStock").value,
-            IdProvedor : document.getElementById("inProvedor").value
+            IdProveedor : document.getElementById("inProvedor").value
         })
     });
     if(res.ok)
@@ -222,7 +177,7 @@ function crearFormulario(producto)
 
     const inProvedor = document.createElement("input");
     inProvedor.id = "inProvedor";
-    inProvedor.value = producto.IdProvedor;
+    inProvedor.value = producto.IdProveedor;
     form.appendChild(inProvedor);
 
     div.appendChild(form);
@@ -237,6 +192,7 @@ function agregarTabla(producto)
 
     const thID = document.createElement("th");
     thID.textContent = producto.IdProducto;
+    thID.setAttribute("scope","row");
     console.log(producto.IdProducto);
     tr.appendChild(thID);
 
@@ -261,9 +217,9 @@ function agregarTabla(producto)
     thStock.textContent = producto.Stock;
     tr.appendChild(thStock);
 
-    const thIdProvedor = document.createElement("th");
-    thIdProvedor.textContent = producto.IdProvedor;
-    tr.append(thIdProvedor);
+    const thIdProveedor = document.createElement("th");
+    thIdProveedor.textContent = producto.IdProveedor;
+    tr.append(thIdProveedor);
 
     const botonEditar = document.createElement("button");
     const iconoEditar = document.createElement("i");
@@ -292,7 +248,7 @@ function agregarTabla(producto)
 }
 
 function limpiarTabla(tabla) {
-    const filas = tabla.querySelectorAll("tr:not(:first-child)");
+    const filas = tabla.querySelectorAll("tr");
     filas.forEach(fila => {
         fila.remove();
     });
