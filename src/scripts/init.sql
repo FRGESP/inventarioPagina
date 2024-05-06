@@ -158,7 +158,7 @@ END
 GO
 
 
-CREATE PROCEDURE sp_updPersonas(
+create PROCEDURE sp_updPersonas(
     @idpersona INT,
 	@persona varchar(50),
 	@apellido varchar(100),
@@ -168,7 +168,7 @@ CREATE PROCEDURE sp_updPersonas(
 )
 AS
 BEGIN
-    update Personas set Nombre=UPPER(@persona), Apellidos=UPPER(@apellido), Direccion=UPPER(@apellido
+    update Personas set Nombre=UPPER(@persona), Apellidos=UPPER(@apellido), Direccion=UPPER(@direccion
 	), Cuenta=@cuenta, Telefono=@telefono WHERE IdPersona=@idpersona
 END
 GO
