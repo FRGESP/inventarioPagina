@@ -124,7 +124,15 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE sp_borrarPersona(
+	@id int
+)
+as
+BEGIN 
+	DELETE FROM Personas where IdPersona = @id;
+END
 go
+
 CREATE PROCEDURE sp_borrarProductoTicket(
 	@id int
 )
@@ -146,6 +154,22 @@ CREATE PROCEDURE sp_insertPersonas(
 AS
 BEGIN
     INSERT into Personas VALUES(UPPER(@persona),UPPER(@apellido),@direccion,@cuenta,@telefono)
+END
+GO
+
+
+CREATE PROCEDURE sp_updPersonas(
+    @idpersona INT,
+	@persona varchar(50),
+	@apellido varchar(100),
+	@direccion varchar(50),
+	@cuenta varchar,
+    @telefono varchar(10)
+)
+AS
+BEGIN
+    update Personas set Nombre=UPPER(@persona), Apellidos=UPPER(@apellido), Direccion=UPPER(@apellido
+	), Cuenta=@cuenta, Telefono=@telefono WHERE IdPersona=@idpersona
 END
 GO
 
@@ -421,4 +445,3 @@ go
 
 select dbo.sumasVenta() as Total
 -------------------------------------TRANSACCIONES-------------------------------------------------------------------
-
