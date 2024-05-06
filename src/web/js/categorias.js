@@ -84,40 +84,35 @@ async function crearProducto(){
     
 };
 
-async function obtenerProducto() {
+async function obtenerCategoria() {
     div.innerHTML = '';
     idP = this.getAttribute('editar-id');
     console.log(idP);
-    const res = await fetch(API + "productosVista/" + idP);
+    const res = await fetch(API + "categorias/" + idP);
     if (res.ok) {
         const resJson = await res.json();
         crearFormulario(resJson);
     }
 }
 
-async function editarProducto() {
+async function editarCategoria() {
     limpiarTabla(tabla);
     console.log(idP);
-    const res = await fetch(API+"Productos/"+idP,{
+    const res = await fetch(API+"categorias/"+idP,{
         method : "PUT",
         headers : {
             "Content-Type" : "application/json"
         },
         body : JSON.stringify({
-            Nombre : document.getElementById("inProducto").value,
-            IdCategoria : document.getElementById("inCategoria").value,
-            PrecioCompra : document.getElementById("inPrecioCompra").value,
-            PrecioVenta : document.getElementById("inPrecioVenta").value,
-            Stock : document.getElementById("inStock").value,
-            IdProveedor : document.getElementById("inProveedor").value
+            Categoria : document.getElementById("inProducto").value
         })
     });
     if(res.ok)
     {
-        encontrarPorId("productosVista/",idP)
-        crearAlerta("success","El producto de ha actualizado con exito");
+        encontrarPorId("categorias/",idP)
+        crearAlerta("success","La categoria se ha actualizado con exito");
     } else {
-        crearAlerta("danger","Categoria no registrada. Vuelva a intentarlo");
+        crearAlerta("danger","Error al actualizar categoria");
     }
 }
 
@@ -138,7 +133,7 @@ async function encontrarPorId(ruta,id) {
 
 async function borrarProducto() {
     idP = this.getAttribute('borrar-id');
-    const res = await fetch(API+"productos/"+idP, {
+    const res = await fetch(API+"categorias/"+idP, {
         method : "DELETE",
         headers : {
             "Content-Type" : "application/json"
@@ -147,7 +142,9 @@ async function borrarProducto() {
     if(res.ok)
     {
         mostrarTodo();
-        crearAlerta("success","El producto se ha eliminado exitosamente");
+        crearAlerta("success","La categoria se ha eliminado exitosamente");
+    }else {
+        crearAlerta("danger","Error al borrar la categoria");
     }
 } 
 
@@ -179,7 +176,7 @@ function crearFormulario(producto)
 {
     const form = document.createElement("div");
     const p = document.createElement("p");
-    p.textContent = "ID de producto: "+producto.IdProducto;
+    p.textContent = "ID de la categoria: "+producto.IdCategoria;
     form.appendChild(p);
 
     const lbProducto = document.createElement("laber");
@@ -189,61 +186,9 @@ function crearFormulario(producto)
     const inProducto = document.createElement("input");
     inProducto.classList.add("form-control");
     inProducto.id = "inProducto";
-    inProducto.value = producto.Nombre;
+    inProducto.value = producto.Categoria;
     form.appendChild(inProducto);
 
-    const lbCategoria = document.createElement("label");
-    lbCategoria.classList.add("form-labe");
-    lbCategoria.textContent = "Categoria:"
-    form.appendChild(lbCategoria);
-    const inCategoria = document.createElement("select");
-    inCategoria.classList.add("form-select","form-control-sm");
-    inCategoria.setAttribute("aria-label","Default select example");
-    inCategoria.id = "inCategoria";
-    form.appendChild(inCategoria);
-    const opcion1 = document.createElement("option");
-    obtenerNombre("nombresCategorias",inCategoria,producto.Categoria);
-
-    const lbPrecioC = document.createElement("label");
-    lbPrecioC.classList.add("form-labe");
-    lbPrecioC.textContent = "Precio de compra:"
-    form.appendChild(lbPrecioC);
-    const inPrecioCompra = document.createElement("input");
-    inPrecioCompra.classList.add("form-control");
-    inPrecioCompra.id = "inPrecioCompra";
-    inPrecioCompra.value = producto.PrecioCompra;
-    form.appendChild(inPrecioCompra);
-
-    const lbPrecioV = document.createElement("label");
-    lbPrecioV.classList.add("form-labe");
-    lbPrecioV.textContent = "Precio de Venta:"
-    form.appendChild(lbPrecioV);
-    const inPrecioVenta = document.createElement("input");
-    inPrecioVenta.classList.add("form-control");
-    inPrecioVenta.id = "inPrecioVenta";
-    inPrecioVenta.value = producto.PrecioVenta;
-    form.appendChild(inPrecioVenta);
-
-    const lbStock = document.createElement("label");
-    lbStock.classList.add("form-labe");
-    lbStock.textContent = "Stock:"
-    form.appendChild(lbStock);
-    const inStock = document.createElement("input");
-    inStock.classList.add("form-control");
-    inStock.id = "inStock";
-    inStock.value = producto.Stock;
-    form.appendChild(inStock);
-
-    const lbProv = document.createElement("label");
-    lbProv.classList.add("form-labe");
-    lbProv.textContent = "Proveedor:"
-    form.appendChild(lbProv);
-    const inProvedor = document.createElement("select");
-    inProvedor.id = "inProveedor";
-    inProvedor.classList.add("form-select","form-control-sm");
-    inProvedor.setAttribute("aria-label","Default select example");
-    form.appendChild(inProvedor);
-    obtenerNombre("nombresProveedores",inProvedor,producto.Proveedor);
 
     div.appendChild(form);
 }
@@ -294,7 +239,7 @@ function agregarTabla(producto)
 
     iconoEditar.classList.add("fa-solid","fa-pen-to-square");
     botonEditar.classList.add("boton-icono");
-    botonEditar.onclick = obtenerProducto;
+    botonEditar.onclick = obtenerCategoria;
     botonEditar.appendChild(iconoEditar);
     botonEditar.setAttribute('editar-id',producto.IdCategoria);
     botonEditar.setAttribute('data-bs-toggle',"modal");
@@ -329,10 +274,10 @@ function seleccionID()
     const eleccion = document.getElementById("selectBuscar").value;
     const input = document.getElementById("inputBuscar").value;
     if(eleccion == "Nombre") {
-        buscarPorNombre("productosNombre",input);
+        buscarPorNombre("categoriasNombre",input);
     }
     if(eleccion == "ID") {
-        encontrarPorId("productosVista/",input);
+        encontrarPorId("categorias/",input);
     }
     
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getCategorias } from "../controllers/categorias.controllers.js";
+import { deleteCategoria, getCategoria, getCategorias, getName, updateCategoria } from "../controllers/categorias.controllers.js";
 
 
 const router = Router();
@@ -8,16 +8,16 @@ const router = Router();
 
 //Obetener todos los elementos
 router.get("/categorias", getCategorias);
-// //Obetener un elemento por ID
-// router.get("/productos/:id", getProduct);
+//Obetener un elemento por ID
+router.get("/categorias/:id", getCategoria);
 // //Crear un elemento
 // router.post("/productos", createProduct);
-// //Actualizar elemento
-// router.put("/productos/:id", updateProduct);
-// //Borrar elemento
-// router.delete("/productos/:id", deleteProduct);
-// //Obetener elemento por nombre
-// router.post("/productosNombre",getName);
+//Actualizar elemento
+router.put("/categorias/:id", updateCategoria);
+//Borrar elemento
+router.delete("/categorias/:id", deleteCategoria);
+//Obetener elemento por nombre
+router.post("/categoriasNombre",getName);
 
 // // Vistas
 

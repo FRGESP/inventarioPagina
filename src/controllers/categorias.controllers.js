@@ -9,15 +9,15 @@ export const getCategorias =  async (req, res) => {
 }
 
 //Aqui se va a obtener un solo elemento por su ID
-export const getProduct = async (req, res) => {
+export const getCategoria = async (req, res) => {
     try{const pool = await getConnection();
     const result = await pool.request()
     .input('id',sql.Int, req.params.id)
-    .query("select * from Productos where idProducto = @id") 
+    .query("select * from Categorias where IdCategoria = @id") 
 
     if (result.rowsAffected[0] === 0)
     {
-        return res.status(404).json({message: "Product not found"})
+        return res.status(404).json({message: "Categoria not found"})
         
     }
     return res.json(result.recordset[0]);
@@ -59,43 +59,38 @@ export const createProduct = async (req, res) => {
 };
 
 // Aqui se actualiza los elementos
-export const updateProduct= async (req, res) => {
+export const updateCategoria= async (req, res) => {
     try
     {
         const pool = await getConnection();
         const result = await pool.request()
         .input('id',sql.Int, req.params.id)
-        .input('Nombre',sql.VarChar,req.body.Nombre)
-        .input('IdCategoria',sql.Int,req.body.IdCategoria)
-        .input('PrecioCompra',sql.Money,req.body.PrecioCompra)
-        .input('PrecioVenta',sql.Money,req.body.PrecioVenta)
-        .input('Stock',sql.Int,req.body.Stock)
-        .input('IdProveedor',sql.Int,req.body.IdProveedor)
-        .query("update Productos set Nombre = @Nombre,IdCategoria = @IdCategoria, PrecioCompra = @PrecioCompra, PrecioVenta =  @PrecioVenta, Stock = @Stock, IdProveedor = @IdProveedor where IdProducto = @id");
+        .input('Categoria',sql.VarChar,req.body.Categoria)
+        .query("update Categorias set Categoria = UPPER(@Categoria) where IdCategoria = @id");
         console.log(result);
         if (result.rowsAffected[0] === 0)
         {
-            return res.status(404).json({message: "Product not found"})
+            return res.status(404).json({message: "Categoria not found"})
         }
-        return res.json({message : "Product Updated"});
+        return res.json({message : "Categoria Updated"});
     }
     catch(error)
     {
         console.error("Error:", error.message);
-        return res.status(404).json({message : "La categoria no está registrada"})
+        return res.status(404).json({message : "Error al actualizar"})
     }
     
 };
 
 // Aqui se borran los elementos
-export const deleteProduct = async (req, res) => {
+export const deleteCategoria = async (req, res) => {
     try
     {
         const pool = await getConnection();
 
     const result = await pool.request()
     .input('id',sql.Int,req.params.id)
-    .query("EXEC sp_borrarProducto @id");
+    .query("EXEC sp_borrarCategoria @id");
 
     console.log(result);
 
@@ -103,7 +98,7 @@ export const deleteProduct = async (req, res) => {
     {
         return res.status(404).json({message: "Product not found"})
     }
-    return res.json({message : "Product deleted"});  
+    return res.json({message : "Categoria deleted"});  
     } catch(error)
     {
         console.error("Error:", error.message);
@@ -118,14 +113,14 @@ export const getName = async (req,res) => {
 
     const result = await pool.request()
     .input('Nombre',sql.VarChar,req.body.Nombre)
-    .query("select * from ProductosVista where Nombre like '%'+@Nombre+'%'");
+    .query("select * from Categorias where Categoria like '%'+@Nombre+'%'");
     
     
 
     console.log(result);
 
     if(result.rowsAffected[0] === 0) {
-        return res.status(404).json({message : "Product not found"});
+        return res.status(404).json({message : "Categoria not found"});
     }
     return res.json(result.recordset);
 }
