@@ -124,7 +124,6 @@ BEGIN
 END
 GO
 
-EXEC sp_borrarCategoria 1
 go
 CREATE PROCEDURE sp_borrarProductoTicket(
 	@id int
