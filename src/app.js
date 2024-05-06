@@ -1,6 +1,7 @@
 import express from 'express'
 import productsRoutes from './routes/products.route.js'
 import categoriasRoutes from './routes/categorias.route.js'
+import inicioRoutes from './routes/inicio.route.js'
 import cors from "cors";
 
 
@@ -12,6 +13,7 @@ app.use(cors({
 app.use(express.json());
 app.use(productsRoutes);
 app.use(categoriasRoutes);
+app.use(inicioRoutes);
 
 
 export default app;

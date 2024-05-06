@@ -61,13 +61,9 @@ IdDetalleVenta int not null identity primary key,
 Cantidad smallint not null,
 Total money not null check(Total>=0),
 Fecha date not null,
-IdCliente int foreign key references Clientes(IdCliente) on delete set null
+IdCliente int not null foreign key references Clientes(IdCliente) on delete cascade
 );
 
-create table Temp_Ventas(
-    IdCliente int
-)
-go
 
 create table Devoluciones(
 IdDevolucion int not null identity primary key,
@@ -87,7 +83,7 @@ select * from Proveedores
 select * from Ventas
 go
 
------------------------------------------------STORE PROCEDURES----------------------------------------------
+-----------------------------------------------STOCK PROCEDURES----------------------------------------------
 
 -- PROCEDURE PARA AGREGAR CATEGORIAS
 CREATE PROCEDURE sp_insertCategoria(
@@ -118,6 +114,16 @@ BEGIN
 	DELETE FROM Productos where IdProducto = @id;
 END
 GO
+
+CREATE PROCEDURE sp_borrarProductoTicket(
+	@id int
+)
+AS
+BEGIN
+	DELETE FROM Ventas where IdVenta = @id;
+END
+GO
+
 
 -- PROCEDURE PARA AGREGAR PERSONAS
 CREATE PROCEDURE sp_insertPersonas(
@@ -207,8 +213,25 @@ BEGIN
 END
 GO
 
+create function obtenerTicket()
+ returns int
+ as
+ begin
+	declare @ID int;
+	set @ID = (SELECT IDENT_CURRENT('DetalleVenta')+1);
+	return @ID;
+end
+go
 
-
+create function sumasVenta()
+returns int 
+as
+begin 
+	declare @Total int
+	set @Total = (select SUM(Monto) from Ventas where Ticket = dbo.obtenerTicket()); 
+	return @Total
+end
+go
 -----------------------------------------------TRIGGERS----------------------------------------------------------
 
 CREATE TABLE RegistroProducto(
@@ -255,6 +278,18 @@ SELECT @idProducto=idProducto FROM deleted
 INSERT INTO RegistroProducto VALUES(@idProducto,GETDATE(),'Delete',SYSTEM_USER)
 GO
 
+CREATE TRIGGER TR_DeletedProductTicket
+ON Ventas
+FOR DELETE
+AS
+SET NOCOUNT ON;
+DECLARE @IdProducto INT, @Cantidad INT
+select @Cantidad = Cantidad from deleted;
+select @IdProducto = IdProducto from deleted;
+update Productos set Productos.Stock = Productos.Stock+@Cantidad where Productos.IdProducto = @IdProducto;
+go
+
+
 --Update--
 CREATE TRIGGER TR_UpdateProducto
 ON Productos
@@ -272,6 +307,7 @@ ON Ventas
 FOR INSERT 
 AS
 SET NOCOUNT ON;
+
 UPDATE Productos SET Productos.Stock=Productos.Stock-inserted.Cantidad FROM inserted
 INNER JOIN Productos ON Productos.idProducto=inserted.idProducto
 GO
@@ -325,34 +361,26 @@ BEGIN
 END
 go
 
-create Procedure sp_DetalleVenta
+Create Procedure sp_DetalleVenta (@IdCliente int)
 as
 begin
 	
-	declare @CantidadTotal int, @Total money, @Id int, @IdCliente int;
+	declare @CantidadTotal int, @Total money, @Id int;
 	set @Id = (SELECT IDENT_CURRENT('DetalleVenta')+1);
 	set @CantidadTotal = (select SUM(Cantidad) from Ventas where Ticket = @Id);
 	set @Total = (select SUM(Monto) from Ventas where Ticket = @Id)
-	set @IdCliente = (select IdCliente from Temp_Ventas);
 	insert into DetalleVenta values (@CantidadTotal,@Total,GETDATE(),@IdCliente)
-	DELETE from Temp_Ventas;
 end;
 go
 
-create Procedure sp_TempVentas(@IdCliente int)
-as
-begin 
-	insert into Temp_Ventas values (@IdCliente)
-end;
-go
 
 select * from DetalleVenta
 
-/*EXEC sp_TempVentas 1
+/*
 
-EXEC sp_Ventas 1, 2
+EXEC sp_Ventas 20, 2
 
-EXEC sp_DetalleVenta */
+EXEC sp_DetalleVenta 1*/
 
 -------------------------------------VISTAS--------------------------------------------------------------------
 GO
@@ -375,7 +403,12 @@ as
  select IdCategoria as Id, Categoria as Nombre from Categorias;
 go
 
+CREATE VIEW vistaTicket
+as
+	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where v.Ticket = dbo.obtenerTicket();
 go
 
 
+select dbo.sumasVenta() as Total
+-------------------------------------TRANSACCIONES--------------------------------------------------------------------
 
