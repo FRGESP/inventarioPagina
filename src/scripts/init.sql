@@ -17,7 +17,7 @@ Categoria varchar(50) not null
 create table Productos(
 IdProducto int not null identity primary key,
 Nombre varchar(50) not null,
-IdCategoria int foreign key references Categorias(idCategoria) on delete set null,
+IdCategoria int foreign key references Categorias(idCategoria) on delete cascade,
 PrecioCompra money not null check(PrecioCompra>=0),
 PrecioVenta money not null check(PrecioVenta>=0),
 Stock int default 0 not null check(Stock>=0),
@@ -35,21 +35,21 @@ Telefono varchar(10) not null
 
 create table Clientes(
 IdCliente int not null identity primary key,
-IdPersona int foreign key references Personas(IdPersona) on delete set null
+IdPersona int foreign key references Personas(IdPersona) on delete cascade
 );
 
 
 
 create table Empleados(
 IdEmpleado int not null identity primary key,
-IdPersona int foreign key references Personas(IdPersona) on delete set null,
+IdPersona int foreign key references Personas(IdPersona) on delete cascade,
 Sueldo money not null,
 Estatus varchar(50) check(Estatus IN('Empleado','Despedido','Ausente'))
 );
 
 create table Ventas(
 IdVenta int not null identity primary key,
-IdProducto int foreign key references Productos(IdProducto) on delete set null,
+IdProducto int foreign key references Productos(IdProducto) on delete cascade,
 Cantidad int not null,
 Precio int not null,
 Ticket int not null,
@@ -67,7 +67,7 @@ IdCliente int not null foreign key references Clientes(IdCliente) on delete casc
 
 create table Devoluciones(
 IdDevolucion int not null identity primary key,
-IdDetalleVenta int foreign key references DetalleVenta(IdDetalleVenta) on delete set null,
+IdDetalleVenta int foreign key references DetalleVenta(IdDetalleVenta) on delete cascade,
 Fecha date not null
 );
 
@@ -115,6 +115,17 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE sp_borrarCategoria(
+	@id int
+)
+as
+BEGIN 
+	DELETE FROM Categorias where IdCategoria = @id;
+END
+GO
+
+EXEC sp_borrarCategoria 1
+go
 CREATE PROCEDURE sp_borrarProductoTicket(
 	@id int
 )
@@ -176,7 +187,7 @@ BEGIN
 END
 GO
 
------------------------------------------------FUNCIONES----------------------------------------------------------
+-----------------------------------------------FUNCIONES---------------------------------------------------------
 
 --FUNCION PARA APLICAR DESCUENTO MEDIANTE LA CANTIDAD
 CREATE OR ALTER FUNCTION DescuentoCantidad(@Producto varchar(50), @Cantidad int)
@@ -245,7 +256,7 @@ GO
 
 CREATE TABLE RegistroPrecioProducto(
 	idAproducto INT IDENTITY PRIMARY KEY,
-	idProducto INT FOREIGN KEY REFERENCES Productos(IdProducto) on delete set null,
+	idProducto INT FOREIGN KEY REFERENCES Productos(IdProducto) on delete cascade,
 	Fecha DATE,
 	Accion VARCHAR(25),
 	Usuario VARCHAR(25),
