@@ -1,3 +1,4 @@
+use master
 create database Tienda;
 go
 use Tienda;
@@ -210,6 +211,72 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE sp_Ventas(
+	@IdProducto int,
+	@Cantidad smallint
+)
+AS
+BEGIN
+	
+	declare @Monto money, @NumTicket int, @Precio money;
+	set @Precio = (select PrecioVenta from Productos where IdProducto = @IdProducto)
+	select @Monto = @Cantidad*@Precio;
+	set @NumTicket = (SELECT IDENT_CURRENT('DetalleVenta')+1);
+
+	insert into Ventas values (@IdProducto,@Cantidad,@Precio,@NumTicket,@Monto);
+
+END
+go
+create function obtenerTicket()
+ returns int
+ as
+ begin
+	declare @ID int;
+	set @ID = (SELECT IDENT_CURRENT('DetalleVenta')+1);
+	return @ID;
+end
+go
+Create Procedure sp_DetalleVenta (@IdCliente int)
+as
+begin
+	
+	declare @CantidadTotal int, @Total money, @Id int;
+	
+
+	IF (select SUM(Cantidad) from Ventas where Ticket = 2) IS NULL AND (select dbo.obtenerTicket()) < 3
+	BEGIN 
+		set @Id = 1;
+		set @CantidadTotal = (select SUM(Cantidad) from Ventas where Ticket = @Id);
+		set @Total = (select SUM(Monto) from Ventas where Ticket = @Id)
+		insert into DetalleVenta values (@CantidadTotal,@Total,GETDATE(),@IdCliente)
+	END
+	ELSE
+	BEGIN 
+		set @Id = (SELECT IDENT_CURRENT('DetalleVenta')+1);
+		set @CantidadTotal = (select SUM(Cantidad) from Ventas where Ticket = @Id);
+		set @Total = (select SUM(Monto) from Ventas where Ticket = @Id)
+		insert into DetalleVenta values (@CantidadTotal,@Total,GETDATE(),@IdCliente)
+	END
+end;
+go
+
+CREATE PROCEDURE sp_VentasPrimerVenta(
+	@IdProducto int,
+	@Cantidad smallint
+)
+AS
+BEGIN
+	
+	declare @Monto money, @Precio money;
+	set @Precio = (select PrecioVenta from Productos where IdProducto = @IdProducto)
+	select @Monto = @Cantidad*@Precio;
+
+	insert into Ventas values (@IdProducto,@Cantidad,@Precio,1,@Monto);
+
+END
+go
+
+
 -----------------------------------------------FUNCIONES---------------------------------------------------------
 
 --FUNCION PARA APLICAR DESCUENTO MEDIANTE LA CANTIDAD
@@ -247,16 +314,6 @@ BEGIN
 END
 GO
 
-create function obtenerTicket()
- returns int
- as
- begin
-	declare @ID int;
-	set @ID = (SELECT IDENT_CURRENT('DetalleVenta')+1);
-	return @ID;
-end
-go
-
 create function sumasVenta()
 returns int 
 as
@@ -266,6 +323,26 @@ begin
 	return @Total
 end
 go
+create function sumasPrimerVenta()
+returns int 
+as
+begin 
+	declare @Total int
+	set @Total = (select SUM(Monto) from Ventas where Ticket = 1); 
+	return @Total
+end
+go
+
+create function sumaDetalleVenta()
+returns int
+as
+begin 
+	declare @Total int
+	set @Total = (select SUM(Cantidad) from DetalleVenta);
+	return @Total;
+end
+go
+
 -----------------------------------------------TRIGGERS----------------------------------------------------------
 
 CREATE TABLE RegistroProducto(
@@ -378,37 +455,7 @@ EXEC sp_insertPersonas 'Juan','Pérez','Calle Guadalupe 54','454545','4545454545
 EXEC sp_insertClientes 1
 
 go
-CREATE PROCEDURE sp_Ventas(
-	@IdProducto int,
-	@Cantidad smallint
-)
-AS
-BEGIN
-	
-	declare @Monto money, @NumTicket int, @Precio money;
-	set @Precio = (select PrecioVenta from Productos where IdProducto = @IdProducto)
-	select @Monto = @Cantidad*@Precio;
-	set @NumTicket = (SELECT IDENT_CURRENT('DetalleVenta')+1);
 
-	insert into Ventas values (@IdProducto,@Cantidad,@Precio,@NumTicket,@Monto);
-
-END
-go
-
-Create Procedure sp_DetalleVenta (@IdCliente int)
-as
-begin
-	
-	declare @CantidadTotal int, @Total money, @Id int;
-	set @Id = (SELECT IDENT_CURRENT('DetalleVenta')+1);
-	set @CantidadTotal = (select SUM(Cantidad) from Ventas where Ticket = @Id);
-	set @Total = (select SUM(Monto) from Ventas where Ticket = @Id)
-	insert into DetalleVenta values (@CantidadTotal,@Total,GETDATE(),@IdCliente)
-end;
-go
-
-
-select * from DetalleVenta
 
 /*
 
@@ -442,6 +489,31 @@ as
 	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where v.Ticket = dbo.obtenerTicket();
 go
 
+CREATE VIEW vistaNombreCliente
+AS
+	SELECT IdCliente,CONCAT(P.Nombre,' ', P.Apellidos) as Nombre from Clientes as c INNER JOIN Personas as p ON c.IdPersona = P.IdPersona;
+go
 
-select dbo.sumasVenta() as Total
+CREATE VIEW vistaTicketPrimerVenta
+as
+	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where v.Ticket = 1;
+go
+
+
+select * FROM Ventas
 -------------------------------------TRANSACCIONES-------------------------------------------------------------------
+go
+
+CREATE PROCEDURE sp_TransaccionDetalleVenta (@IdCliente int)
+AS
+BEGIN
+	BEGIN TRY 
+	BEGIN TRANSACTION
+	EXEC sp_DetalleVenta @Idcliente
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+	END CATCH
+END
+go

@@ -8,9 +8,27 @@ export const getTicket =  async (req, res) => {
     res.json(result.recordset);
 }
 
+export const getTicketPrimerVenta =  async (req, res) => {
+    const pool = await getConnection();
+    const result = await pool.request().query('select * from vistaTicketPrimerVenta');
+    res.json(result.recordset);
+}
+
+export const getSumDetalle =  async (req, res) => {
+    const pool = await getConnection();
+    const result = await pool.request().query('select dbo.sumaDetalleVenta() as Total');
+    res.json(result.recordset);
+}
+
 export const getSuma =  async (req, res) => {
     const pool = await getConnection();
     const result = await pool.request().query('select dbo.sumasVenta() as Total');
+    res.json(result.recordset);
+}
+
+export const getSumaPrimer =  async (req, res) => {
+    const pool = await getConnection();
+    const result = await pool.request().query('select dbo.sumasPrimerVenta() as Total');
     res.json(result.recordset);
 }
 //Aqui se va a obtener un solo elemento por su ID
@@ -34,7 +52,27 @@ export const getVentaTicket = async (req, res) => {
     }
 };
 
-//Aqui se crean los elementos
+//Aqui se va a obtener un solo elemento por su ID
+export const getNombreCliente = async (req, res) => {
+    try{const pool = await getConnection();
+    const result = await pool.request()
+    .input('id',sql.Int, req.params.id)
+    .query("select Nombre from vistaNombreCliente where IdCliente = @id") 
+
+    if (result.rowsAffected[0] === 0)
+    {
+        return res.status(404).json({message: "Cliente no encontrado"})
+        
+    }
+    return res.json(result.recordset);
+    }
+    catch(error)
+    { 
+        console.error("Error:", error.message);
+        return res.status(404).json({message : error.message})
+    }
+};
+
 export const generarVenta = async (req, res) => {
     try {
         console.log(req.body);
@@ -45,6 +83,22 @@ export const generarVenta = async (req, res) => {
         .query("EXEC sp_Ventas @Producto, @Cantidad");
         console.log(result);
         return res.json({message : "Venta generada"});
+    }catch(error){
+        console.error("Error:", error.message);
+        return res.status(404).json({message : error.message});
+    }
+};
+
+export const generarPrimerVenta = async (req, res) => {
+    try {
+        console.log(req.body);
+        const pool = await getConnection();
+        const result = await pool.request()
+        .input('Producto',sql.Int,req.body.Producto)
+        .input('Cantidad',sql.Int,req.body.Cantidad)
+        .query("EXEC sp_VentasPrimerVenta @Producto, @Cantidad");
+        console.log(result);
+        return res.json({message : "Primer Venta generada"});
     }catch(error){
         console.error("Error:", error.message);
         return res.status(404).json({message : error.message});
@@ -65,6 +119,7 @@ export const subirTicket = async (req, res) => {
         return res.status(404).json({message : error.message});
     }
 };
+
 
 
 

@@ -1,4 +1,4 @@
-let idP;
+let idP,cliente;
 
 const tabla = document.getElementById("tabla");
 const alertas = document.getElementById("alertas");
@@ -20,7 +20,34 @@ async function mostrarTodo() {
             tabla.appendChild(fila);
         });
         console.log(resJson);
-        obtenerTotal();
+        ponerTotal();
+    }
+    else{
+        console.log("No hay productos");
+    }
+};
+
+async function mostrar() {
+    const primera = await saberPrimera();
+    if (primera == 1) {
+        mostrarTodoPrimera();
+    } else {
+        mostrarTodo();
+    }
+}
+
+async function mostrarTodoPrimera() {
+    const res = await fetch(API+"primerTicket/");
+    if(res.ok)
+    {
+        const resJson = await res.json();
+        limpiarTabla(tabla);
+        resJson.forEach(producto => {
+            const fila = agregarTabla(producto);
+            tabla.appendChild(fila);
+        });
+        console.log(resJson);
+        ponerTotal();
     }
     else{
         console.log("No hay productos");
@@ -44,8 +71,8 @@ async function subirVenta() {
     
 };
 
-async function obtenerTotal() {
-    const res = await fetch(API+"Total/");
+async function obtenerTotal(ruta) {
+    const res = await fetch(API+ruta);
     if(res.ok)
     {
         const resJson = await res.json();
@@ -61,6 +88,15 @@ async function obtenerTotal() {
     }
 };
 
+async function ponerTotal() {
+    const primer = await saberPrimera();
+    if(primer == 1) {
+        obtenerTotal("TotalPrimerVenta");
+    } else {
+        obtenerTotal("Total");
+    }
+}
+
 
 
 async function borrarProducto() {
@@ -73,7 +109,7 @@ async function borrarProducto() {
     });
     if(res.ok)
     {
-        mostrarTodo();
+        mostrar();
         crearAlerta("success","El producto se ha eliminado exitosamente");
     }
 } 
@@ -149,9 +185,9 @@ function limpiarTabla(tabla) {
     });
 }
 
-async function agregarAVenta(){
+async function agregarAVenta(ruta){
     limpiarTabla(tabla);
-    const res = await fetch(API+"ventaTicket/",{
+    const res = await fetch(API+ruta,{
         method : "POST",
         headers : {
             "Content-Type" : "application/json"
@@ -171,7 +207,7 @@ async function agregarAVenta(){
     } else {
         crearAlerta("danger","No se pudo agregar el producto. Verifique los datos");
     }
-    mostrarTodo();
+    mostrar();
 };
 
 async function subirTicket(){
@@ -181,7 +217,7 @@ async function subirTicket(){
             "Content-Type" : "application/json"
         },
         body : JSON.stringify({
-            Cliente : inputCliente.value
+            Cliente : cliente
         })
     });
     if(res.ok)
@@ -191,6 +227,7 @@ async function subirTicket(){
         inputCliente.value = '';
         crearAlerta("success","Venta Exitosa");
         mostrarTodo();
+        deshabilitarElementos();
 
     } else {
         crearAlerta("danger","La venta no se pudo realizar. Verifique los datos");
@@ -198,8 +235,61 @@ async function subirTicket(){
 };
 
 function habilitarElementos() {
-    let elementos = document.querySelectorAll('extra');
+    let elementos = document.querySelectorAll('.extra');
     elementos.forEach(function(elemento) {
-        elemento.removeAttribute('disabbleb');
+        elemento.style.display = '';
     })
+}
+
+function deshabilitarElementos() {
+    let elementos = document.querySelectorAll('.extra');
+    elementos.forEach(function(elemento) {
+        elemento.style.display = 'none';
+    });
+    inputCliente.removeAttribute("disabled");
+    inputCliente.value = "";
+    document.getElementById("botonCliente").style.display = '';
+}
+
+
+async function buscarCliente() {
+    const res = await fetch(API+"nombreCliente/"+inputCliente.value);
+    if (res.ok) {
+        const resJson = await res.json();
+        document.getElementById("botonCliente").style.display = 'none';
+        cliente = inputCliente.value;
+        inputCliente.value = resJson[0].Nombre;
+        inputCliente.setAttribute("disabled","");
+        crearAlerta("success","Cliente encontrado");
+        habilitarElementos();
+    } else {
+        crearAlerta("danger","Cliente no encontrado");
+    }
+};
+
+async function saberPrimera() {
+    const res = await fetch(API+"sumDetalleVenta/");
+    if(res.ok) {
+        const resJson = await res.json();
+        console.log(resJson[0].Total)
+        if(resJson[0].Total == null) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }else {
+        crearAlerta("danger", "Algo salió mal con la venta");
+    }
+}
+
+async function venta() {
+    const primera = await saberPrimera();
+    console.log("Esto es "+primera)
+    if(primera == 1) {
+        agregarAVenta("primerVenta");
+        console.log("Primerventa")
+    } else {
+        agregarAVenta("ventaTicket");
+        console.log("No es primer venta")
+    }
 }

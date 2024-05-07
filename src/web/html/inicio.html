@@ -15,8 +15,8 @@
         }
         .tbl-fixed {
           overflow-y: scroll;
-          height: 70vh;
-          max-height: 60vh;
+          height: 55vh;
+          max-height: 55vh;
           margin-top: 20px;
         }
         table {
@@ -42,7 +42,7 @@
     </style>
     <title>Inicio</title>
 </head>
-<body onload="mostrarTodo()">
+<body onload="mostrar()">
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Inicio</a>
@@ -108,33 +108,36 @@
             <h6 class="mb-3 indicardor">Cliente</h6>
           </div>
           <div class="col-md-auto">
+            <button type="button" class="btn btn-success" onclick="buscarCliente()" id="botonCliente"><i class="fa-solid fa-check"></i></button>
+          </div>
+          <div class="col-md-auto extra" style="display: none;">
             <h3>||</h3>
         </div>
-          <div class="col-md-auto">
-            <input type="text" class="form-control" placeholder="Ingrese el ID" id="inputID" class="extra">
+          <div class="col-md-auto extra" style="display: none;">
+            <input type="text" class="form-control " placeholder="Ingrese el ID" id="inputID">
             <h6 class="mb-3 indicardor">ID</h6>
           </div>
           
-          <div class="col-md-auto">
-            <input type="text" class="form-control" placeholder="Ingrese el la cantidad" id="inputCantidad" value="1" class="extra">
+          <div class="col-md-auto extra" style="display: none;">
+            <input type="text" class="form-control" placeholder="Ingrese el la cantidad" id="inputCantidad" value="1">
             <h6 class="mb-3 indicardor">Cantidad</h6>
           </div>
-          <div class="col-md-auto">
-            <button type="button" class="btn btn-warning" onclick="agregarAVenta()" class="extra">Enviar</button>
+          <div class="col-md-auto extra" style="display: none;">
+            <button type="button" class="btn btn-warning" onclick="venta()">Enviar</button>
           </div>
-          <div class="col-md-auto">
+          <div class="col-md-auto extra" style="display: none;">
             <h3>||</h3>
         </div>
-          <div class="col-md-auto">
+          <div class="col-md-auto extra" style="display: none;">
             <h3>TOTAL: </h3>
           </div>
-          <div class="col-md-auto">
+          <div class="col-md-auto extra" style="display: none;">
             <div id="total">
               <h2 id="Total">0</h2>
             </div>
           </div>
-          <div class="col-md-auto">
-            <button type="button" class="btn btn-success" onclick="subirTicket()" class="extra"><i class="fa-solid fa-check"></i></button>
+          <div class="col-md-auto extra" style="display: none;">
+            <button type="button" class="btn btn-success" onclick="subirTicket()"><i class="fa-solid fa-check"></i></button>
           </div>
         </div>
       </div>
