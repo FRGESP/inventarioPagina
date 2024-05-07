@@ -3,6 +3,7 @@ import productsRoutes from './routes/products.route.js'
 import categoriasRoutes from './routes/categorias.route.js'
 import inicioRoutes from './routes/inicio.route.js'
 import personaRoutes from './routes/personas.route.js'
+import proveedoresRoutes from './routes/proveedores.route.js'
 import cors from "cors";
 
 
@@ -16,5 +17,6 @@ app.use(productsRoutes);
 app.use(categoriasRoutes);
 app.use(inicioRoutes);
 app.use(personaRoutes);
+app.use(proveedoresRoutes);
 
 export default app;
