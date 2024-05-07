@@ -145,11 +145,11 @@ GO
 
 
 -- PROCEDURE PARA AGREGAR PERSONAS
-CREATE PROCEDURE sp_insertPersonas(
+CREATE OR ALTER PROCEDURE sp_insertPersonas(
     @persona varchar(50),
 	@apellido varchar(100),
 	@direccion varchar(50),
-	@cuenta varchar,
+	@cuenta varchar(20),
     @telefono varchar(10)
 )
 AS
@@ -159,12 +159,12 @@ END
 GO
 
 
-create PROCEDURE sp_updPersonas(
+create or ALTER PROCEDURE sp_updPersonas(
     @idpersona INT,
 	@persona varchar(50),
 	@apellido varchar(100),
 	@direccion varchar(50),
-	@cuenta varchar,
+	@cuenta varchar(20),
     @telefono varchar(10)
 )
 AS

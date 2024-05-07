@@ -31,27 +31,26 @@ export const getPersona = async (req, res) => {
 };
 
 //Aqui se crean los elementos
-export const createProduct = async (req, res) => {
+export const createPersona = async (req, res) => {
     try {
         console.log(req.body);
         const pool = await getConnection();
         const result = await pool.request()
         .input('Nombre',sql.VarChar,req.body.Nombre)
-        .input('IdCategoria',sql.Int,req.body.IdCategoria)
-        .input('PrecioCompra',sql.Money,req.body.PrecioCompra)
-        .input('PrecioVenta',sql.Money,req.body.PrecioVenta)
-        .input('Stock',sql.Int,req.body.Stock)
-        .input('IdProveedor',sql.Int,req.body.IdProveedor)
-        .query("EXEC sp_insertProducto @Nombre, @IdCategoria, @PrecioCompra,@PrecioVenta,@Stock,@IdProveedor; SELECT IDENT_CURRENT('Productos') as id;");
+        .input('Apellidos',sql.VarChar,req.body.Apellidos)
+        .input('Direccion',sql.VarChar,req.body.Direccion)
+        .input('Cuenta',sql.VarChar,req.body.Cuenta)
+        .input('Telefono',sql.VarChar,req.body.Telefono)
+        .query("EXEC sp_insertPersonas @Nombre, @Apellidos, @Direccion, @Cuenta, @Telefono; SELECT IDENT_CURRENT('Personas') as id");
         console.log(result);
         res.json({
-            IdProducto : result.recordset[0].id,
+            IdPersona : result.recordset[0].id,
             Nombre : req.body.Nombre,
-            IdCategoria : req.body.IdCategoria,
-            PrecioCompra : req.body.PrecioCompra,
-            PrecioVenta : req.body.PrecioVenta,
-            Stock : req.body.Stock,
-            IdProveedor : req.body.IdProveedor
+            Apellidos : req.body.Apellidos,
+            Direccion : req.body.Direccion,
+            Cuenta : req.body.Cuenta,
+            Telefono : req.body.Telefono
+            
         })
     }catch(error){
         console.error("Error:", error.message);
@@ -113,12 +112,12 @@ export const deletePersona = async (req, res) => {
 
 //Aqui se obtiene los elementos por nombre
 
-export const getName = async (req,res) => {
+export const getNombre = async (req,res) => {
     const pool =  await getConnection();
 
     const result = await pool.request()
     .input('Nombre',sql.VarChar,req.body.Nombre)
-    .query("select * from ProductosVista where Nombre like '%'+@Nombre+'%'");
+    .query("select * from Personas where Nombre like '%'+@Nombre+'%'");
     
     
 

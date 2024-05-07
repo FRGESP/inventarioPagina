@@ -58,28 +58,27 @@ async function buscarPorNombre(ruta,nombre){
 
 async function crearProducto(){
     limpiarTabla(tabla);
-    const res = await fetch(API+"productos/",{
+    const res = await fetch(API+"personas/",{
         method : "POST",
         headers : {
             "Content-Type" : "application/json"
         },
         body : JSON.stringify({
-            Nombre : document.getElementById("inProductoCr").value,
-            IdCategoria : document.getElementById("inCategoriaCr").value,
-            PrecioCompra : document.getElementById("inPrecioCompraCr").value,
-            PrecioVenta : document.getElementById("inPrecioVentaCr").value,
-            Stock : document.getElementById("inStockCr").value,
-            IdProveedor : document.getElementById("inProveedorCr").value
+            Nombre : document.getElementById("inPersonasCr").value,
+            Apellidos : document.getElementById("inApellidosCr").value,
+            Direccion : document.getElementById("inDireccionCr").value,
+            Cuenta : document.getElementById("inCuentaCr").value,
+            Telefono : document.getElementById("inTelefonoCr").value
         })
     });
     if(res.ok)
     {
         const resJson = await res.json();
-        encontrarPorId("productosVista/",resJson.IdProducto);
+        encontrarPorId("personas/",resJson.IdPersona);
         console.log(resJson);
-        crearAlerta("success","El producto se creó correctamente")
+        crearAlerta("success","La persona se agregó correctamente")
     } else {
-        crearAlerta("danger","No se pudo agregar el producto. Verifique los datos");
+        crearAlerta("danger","No se pudo agregar la persona. Verifique los datos");
     }
     
 };
@@ -257,7 +256,7 @@ async function obtenerNombre(ruta,select,actual) {
         console.log(resJson);
     }
     else{
-        console.log("No hay productos");
+        console.log("No hay Personas registradas");
     }
 };
 
@@ -338,10 +337,10 @@ function seleccionID()
     const eleccion = document.getElementById("selectBuscar").value;
     const input = document.getElementById("inputBuscar").value;
     if(eleccion == "Nombre") {
-        buscarPorNombre("productosNombre",input);
+        buscarPorNombre("personasNombre/",input);
     }
     if(eleccion == "ID") {
-        encontrarPorId("productosVista/",input);
+        encontrarPorId("personas/",input);
     }
     
 }
@@ -357,57 +356,46 @@ function crearFormularioCrearProducto()
     form.appendChild(lbProducto);
     const inProducto = document.createElement("input");
     inProducto.classList.add("form-control");
-    inProducto.id = "inProductoCr";
+    inProducto.id = "inPersonasCr";
     form.appendChild(inProducto);
 
-    const lbCategoria = document.createElement("label");
-    lbCategoria.classList.add("form-labe");
-    lbCategoria.textContent = "Categoria:"
-    form.appendChild(lbCategoria);
-    const inCategoria = document.createElement("select");
-    inCategoria.classList.add("form-select","form-control-sm");
-    inCategoria.setAttribute("aria-label","Default select example");
-    inCategoria.id = "inCategoriaCr";
-    form.appendChild(inCategoria);
-    obtenerNombre("nombresCategorias",inCategoria,"");
 
     const lbPrecioC = document.createElement("label");
     lbPrecioC.classList.add("form-labe");
-    lbPrecioC.textContent = "Precio de compra:"
+    lbPrecioC.textContent = "Apellidos:"
     form.appendChild(lbPrecioC);
     const inPrecioCompra = document.createElement("input");
     inPrecioCompra.classList.add("form-control");
-    inPrecioCompra.id = "inPrecioCompraCr";
+    inPrecioCompra.id = "inApellidosCr";
     form.appendChild(inPrecioCompra);
 
     const lbPrecioV = document.createElement("label");
     lbPrecioV.classList.add("form-labe");
-    lbPrecioV.textContent = "Precio de Venta:"
+    lbPrecioV.textContent = "Direccion:"
     form.appendChild(lbPrecioV);
     const inPrecioVenta = document.createElement("input");
     inPrecioVenta.classList.add("form-control");
-    inPrecioVenta.id = "inPrecioVentaCr";
+    inPrecioVenta.id = "inDireccionCr";
     form.appendChild(inPrecioVenta);
 
     const lbStock = document.createElement("label");
     lbStock.classList.add("form-labe");
-    lbStock.textContent = "Stock:"
+    lbStock.textContent = "Cuenta:"
     form.appendChild(lbStock);
     const inStock = document.createElement("input");
     inStock.classList.add("form-control");
-    inStock.id = "inStockCr";
+    inStock.id = "inCuentaCr";
     form.appendChild(inStock);
 
-    const lbProv = document.createElement("label");
-    lbProv.classList.add("form-labe");
-    lbProv.textContent = "Proveedor:"
-    form.appendChild(lbProv);
-    const inProvedor = document.createElement("select");
-    inProvedor.id = "inProveedorCr";
-    inProvedor.classList.add("form-select","form-control-sm");
-    inProvedor.setAttribute("aria-label","Default select example");
-    form.appendChild(inProvedor);
-    obtenerNombre("nombresProveedores",inProvedor,"");
+    const lbTelefono = document.createElement("label");
+    lbTelefono .classList.add("form-labe");
+    lbTelefono .textContent = "Telefono:"
+    form.appendChild(lbTelefono);
+    const inTelefono = document.createElement("input");
+    inTelefono.classList.add("form-control");
+    inTelefono.id = "inTelefonoCr";
+    form.appendChild(inTelefono);
+
 
     divCrear.appendChild(form);
 }
