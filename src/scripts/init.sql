@@ -1,4 +1,5 @@
 use master
+GO
 create database Tienda;
 go
 use Tienda;
@@ -472,23 +473,34 @@ INNER JOIN Productos ON Productos.idProducto=inserted.idProducto
 GO
 
 --Update Precio--
-CREATE TRIGGER TR_UpdatePrecio
+CREATE OR ALTER TRIGGER TR_UpdatePrecio
 ON Productos
 AFTER UPDATE
 AS
 SET NOCOUNT ON;
-DECLARE @idProducto INT
-DECLARE @PrecioCompraAnterior MONEY
-DECLARE @PrecioCompraActual MONEY
-DECLARE @PrecioVentaAnterior MONEY
-DECLARE @PrecioVentaActual MONEY
-SELECT @idProducto=idProducto FROM inserted
-SELECT @PrecioCompraAnterior=PrecioCompra FROM deleted
-SELECT @PrecioCompraActual=PrecioCompra FROM inserted
-SELECT @PrecioVentaAnterior=PrecioVenta FROM deleted
-SELECT @PrecioVentaActual=PrecioVenta FROM inserted
-INSERT INTO RegistroPrecioProducto VALUES(@idProducto,GETDATE(),'Update',SYSTEM_USER,@PrecioCompraAnterior,
-	@PrecioCompraActual,@PrecioVentaAnterior,@PrecioVentaActual)
+	DECLARE @idProducto INT
+	DECLARE @PrecioCompraAnterior MONEY
+	DECLARE @PrecioCompraActual MONEY
+	DECLARE @PrecioVentaAnterior MONEY
+	DECLARE @PrecioVentaActual MONEY
+	SELECT @idProducto=idProducto FROM inserted
+	SELECT @PrecioCompraAnterior=PrecioCompra FROM deleted
+	SELECT @PrecioCompraActual=PrecioCompra FROM inserted
+	SELECT @PrecioVentaAnterior=PrecioVenta FROM deleted
+	SELECT @PrecioVentaActual=PrecioVenta FROM inserted
+	IF UPDATE(PrecioCompra) OR UPDATE(PrecioVenta)
+	BEGIN 	
+		IF @PrecioVentaAnterior != @PrecioVentaActual
+		BEGIN
+		INSERT INTO RegistroPrecioProducto VALUES(@idProducto,GETDATE(),'Update',SYSTEM_USER,@PrecioCompraAnterior,
+			@PrecioCompraAnterior,@PrecioVentaAnterior,@PrecioVentaActual)
+		END
+		IF @PrecioCompraActual != @PrecioCompraAnterior
+		BEGIN
+		INSERT INTO RegistroPrecioProducto VALUES(@idProducto,GETDATE(),'Update',SYSTEM_USER,@PrecioCompraAnterior,
+			@PrecioCompraActual,@PrecioVentaAnterior,@PrecioVentaAnterior)
+		END
+	END
 GO
 
 EXEC sp_insertCategoria 'Bebidas'
