@@ -489,9 +489,9 @@ as
 	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where v.Ticket = dbo.obtenerTicket();
 go
 
-CREATE VIEW vistaNombreCliente
+CREATE or ALTER VIEW vistaNombreCliente
 AS
-	SELECT IdCliente,CONCAT(P.Nombre,' ', P.Apellidos) as Nombre from Clientes as c INNER JOIN Personas as p ON c.IdPersona = P.IdPersona;
+	SELECT c.IdCliente,CONCAT(p.Nombre,' ', p.Apellidos) as Nombre from Clientes as c INNER JOIN Personas as p ON c.IdPersona = p.IdPersona;
 go
 
 CREATE VIEW vistaTicketPrimerVenta
@@ -499,8 +499,8 @@ as
 	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where v.Ticket = 1;
 go
 
+SELECT * FROM vistaNombreCliente
 
-select * FROM Ventas
 -------------------------------------TRANSACCIONES-------------------------------------------------------------------
 go
 
