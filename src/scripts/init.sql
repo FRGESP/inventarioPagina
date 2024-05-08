@@ -285,6 +285,45 @@ BEGIN
 END
 go
 
+CREATE OR ALTER PROCEDURE sp_RegistroPrecio(@id int)
+AS
+BEGIN
+	declare @PrecioAnCompra money, @PrecioAnVenta money, @PrecioActCompra money, @PrecioActVenta money;
+	set @PrecioAnCompra = (select PrecioCompraAnterior from RegistroPrecioProducto where idAproducto = @id);
+	set @PrecioAnVenta = (select PrecioVentaAnterior from RegistroPrecioProducto where idAproducto = @id);
+	set @PrecioActCompra = (select PrecioCompraActual from RegistroPrecioProducto where idAproducto = @id);
+	set @PrecioActVenta = (select PrecioVentaActual from RegistroPrecioProducto where idAproducto = @id);
+
+	IF @PrecioAnCompra = @PrecioActCompra
+	BEGIN
+		select RP.idAproducto,RP.IdProducto,P.Nombre,RP.Fecha,RP.Usuario,'Precio Venta' as 'Campo',RP.PrecioVentaAnterior as 'PrecioAnterior', RP.PrecioVentaActual as 'PrecioActual'  from RegistroPrecioProducto as RP INNER JOIN Productos as P ON RP.idProducto=P.IdProducto where idAproducto = @id
+	END
+	ELSE
+	BEGIN 
+		select RP.idAproducto,RP.IdProducto,P.Nombre,RP.Fecha,RP.Usuario,'Precio Compra' as 'Campo',RP.PrecioCompraAnterior as 'PrecioAnterior', RP.PrecioCompraActual as 'PrecioActual'  from RegistroPrecioProducto as RP INNER JOIN Productos as P ON RP.idProducto=P.IdProducto where idAproducto = @id
+	END
+END
+GO
+
+CREATE OR ALTER PROCEDURE sp_RegistroPrecioProducto(@id int)
+AS
+BEGIN
+	declare @PrecioAnCompra money, @PrecioAnVenta money, @PrecioActCompra money, @PrecioActVenta money;
+	set @PrecioAnCompra = (select PrecioCompraAnterior from RegistroPrecioProducto where idAproducto = @id);
+	set @PrecioAnVenta = (select PrecioVentaAnterior from RegistroPrecioProducto where idAproducto = @id);
+	set @PrecioActCompra = (select PrecioCompraActual from RegistroPrecioProducto where idAproducto = @id);
+	set @PrecioActVenta = (select PrecioVentaActual from RegistroPrecioProducto where idAproducto = @id);
+
+	IF @PrecioAnCompra = @PrecioActCompra
+	BEGIN
+		select RP.idAproducto,RP.IdProducto,P.Nombre,RP.Fecha,RP.Usuario,'Precio Venta' as 'Campo',RP.PrecioVentaAnterior as 'PrecioAnterior', RP.PrecioVentaActual as 'PrecioActual'  from RegistroPrecioProducto as RP INNER JOIN Productos as P ON RP.idProducto=P.IdProducto where RP.idProducto = @id
+	END
+	ELSE
+	BEGIN 
+		select RP.idAproducto,RP.IdProducto,P.Nombre,RP.Fecha,RP.Usuario,'Precio Compra' as 'Campo',RP.PrecioCompraAnterior as 'PrecioAnterior', RP.PrecioCompraActual as 'PrecioActual'  from RegistroPrecioProducto as RP INNER JOIN Productos as P ON RP.idProducto=P.IdProducto where RP.idAproducto = @id
+	END
+END
+GO
 
 -----------------------------------------------FUNCIONES---------------------------------------------------------
 
@@ -506,6 +545,11 @@ go
 CREATE VIEW vistaTicketPrimerVenta
 as
 	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where v.Ticket = 1;
+go
+
+CREATE VIEW vistaNombresRegistro
+AS
+ select RP.idAproducto as ID, P.Nombre from RegistroPrecioProducto as RP INNER JOIN Productos as P on RP.idProducto = P.IdProducto;
 go
 
 SELECT * FROM vistaNombreCliente
