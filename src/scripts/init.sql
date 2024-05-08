@@ -564,7 +564,12 @@ AS
  select RP.idAproducto as ID, P.Nombre from RegistroPrecioProducto as RP INNER JOIN Productos as P on RP.idProducto = P.IdProducto;
 go
 
-SELECT * FROM vistaNombreCliente
+CREATE OR ALTER VIEW facturaClienteDatos
+AS
+ select c.IdCliente as ID,CONCAT(p.Nombre,' ', p.Apellidos) as 'Nombre', p.Cuenta, p.Direccion, p.Telefono from Personas as p INNER JOIN Clientes as c on p.IdPersona = c.IdPersona
+go
+
+SELECT * FROM DetalleVenta
 
 -------------------------------------TRANSACCIONES-------------------------------------------------------------------
 go
@@ -582,3 +587,13 @@ BEGIN
 	END CATCH
 END
 go
+
+CREATE OR ALTER PROCEDURE sp_Factura(@id int)
+AS
+BEGIN
+	DECLARE @IdCliente int = (SELECT IdCliente from DetalleVenta where IdDetalleVenta = @id);
+	select v.IdVenta, v.IdProducto, v.Cantidad, v.Precio, v.Ticket, v.Monto, d.Fecha from Ventas as v INNER JOIN DetalleVenta as d on v.Ticket = d.IdDetalleVenta where Ticket = @id;
+	select * from facturaClienteDatos where ID = @IdCliente;
+END
+
+
