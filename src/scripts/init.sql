@@ -82,6 +82,7 @@ select * from Personas
 select * from Productos
 select * from Proveedores
 select * from Ventas
+select * from DetalleVenta
 go
 
 -----------------------------------------------STOCK PROCEDURES----------------------------------------------
@@ -143,13 +144,21 @@ BEGIN
 END
 GO
 
+CREATE PROCEDURE sp_borrarProveedor(
+	@id int
+)
+as
+BEGIN
+	DELETE FROM Proveedores where IdProveedor = @id;
+END
+GO
 
 -- PROCEDURE PARA AGREGAR PERSONAS
-CREATE OR ALTER PROCEDURE sp_insertPersonas(
+CREATE PROCEDURE sp_insertPersonas(
     @persona varchar(50),
 	@apellido varchar(100),
 	@direccion varchar(50),
-	@cuenta varchar(20),
+	@cuenta varchar,
     @telefono varchar(10)
 )
 AS
@@ -159,12 +168,12 @@ END
 GO
 
 
-create or ALTER PROCEDURE sp_updPersonas(
+create PROCEDURE sp_updPersonas(
     @idpersona INT,
 	@persona varchar(50),
 	@apellido varchar(100),
 	@direccion varchar(50),
-	@cuenta varchar(20),
+	@cuenta varchar,
     @telefono varchar(10)
 )
 AS
