@@ -17,7 +17,8 @@
     "express": "^4.19.2",
     "i": "^0.3.7",
     "mssql": "^10.0.2",
-    "npm": "^10.6.0"
+    "npm": "^10.6.0",
+    "pdfkit": "^0.15.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
