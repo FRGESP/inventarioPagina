@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { getFactura, getProductsPDF } from "../controllers/facturasTest.controller.js";
+import { getFactura, getTicketFact } from "../controllers/facturasTest.controller.js";
 
 const router = Router();
-router.get("/productosPDF", getProductsPDF);
 
 
 //Obetener un elemento por ID
 router.get("/factura/:id", getFactura);
+
+router.get("/facturaDetalle/:id",getTicketFact)
 export default router;
