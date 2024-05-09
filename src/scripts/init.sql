@@ -31,7 +31,7 @@ IdPersona int not null identity primary key,
 Nombre varchar(50) not null,
 Apellidos varchar(100) not null,
 Direccion varchar(50) not null,
-Cuenta varchar(20),
+Cuenta varchar(20) not null,
 Telefono varchar(10) not null
 );
 
@@ -152,7 +152,7 @@ CREATE PROCEDURE sp_insertPersonas(
     @persona varchar(50),
 	@apellido varchar(100),
 	@direccion varchar(50),
-	@cuenta varchar,
+	@cuenta varchar(20),
     @telefono varchar(10)
 )
 AS
