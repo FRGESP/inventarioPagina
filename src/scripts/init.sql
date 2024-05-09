@@ -311,39 +311,6 @@ GO
 -----------------------------------------------FUNCIONES---------------------------------------------------------
 
 --FUNCION PARA APLICAR DESCUENTO MEDIANTE LA CANTIDAD
-CREATE OR ALTER FUNCTION DescuentoCantidad(@Producto varchar(50), @Cantidad int)
-RETURNS varchar(255)
-AS
-BEGIN
-	declare @result varchar(255);
-	declare @nombreProducto varchar(100);
-	SET @nombreProducto = (Select Nombre FROM Productos WHERE Nombre LIKE '%'+@Producto+'%');									
-	IF @nombreProducto IS NOT NULL
-		BEGIN
-		    declare @precioDescuento float
-			IF @Cantidad>=10
-			BEGIN
-			set @precioDescuento =(Select PrecioVenta-(PrecioVenta*25/100) from Productos where Nombre=@nombreProducto);
-			END
-			ELSE
-			IF @Cantidad>=5
-			BEGIN
-			set @precioDescuento =(Select PrecioVenta-(PrecioVenta*10/100) from Productos where Nombre=@nombreProducto);
-		    END
-			ELSE
-			IF @Cantidad>=3
-			BEGIN
-			set @precioDescuento =(Select PrecioVenta-(PrecioVenta*5/100) from Productos where Nombre=@nombreProducto);
-			END
-			ELSE
-			set @precioDescuento =(Select PrecioVenta from Productos where Nombre=@nombreProducto);
-		SET @result = 'EL PRODUCTO: '+@nombreProducto+' CON DESCUENTO TENDRA UN COSTO DE: '+CAST(@precioDescuento as varchar(50))+' PESOS';
-		END
-	ELSE
-		SET @result = 'NO SE HA ENCONTRADO EL PRODUCTO';
-	RETURN @result
-END
-GO
 
 create function sumasVenta()
 returns int 
