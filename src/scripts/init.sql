@@ -58,6 +58,8 @@ Ticket int not null,
 Monto money not null
 );
 
+select * from Ventas
+
 create table DetalleVenta(
 IdDetalleVenta int not null identity primary key,
 Cantidad smallint not null,
@@ -557,6 +559,11 @@ go
 CREATE VIEW vistaTicketPrimerVenta
 as
 	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where v.Ticket = 1;
+go
+
+CREATE VIEW vistaTicketProductos
+as
+	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto;
 go
 
 CREATE VIEW vistaNombresRegistro
