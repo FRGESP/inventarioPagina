@@ -474,6 +474,31 @@ UPDATE Productos SET Productos.Stock=Productos.Stock-inserted.Cantidad FROM inse
 INNER JOIN Productos ON Productos.idProducto=inserted.idProducto
 GO
 
+create or alter TRIGGER TR_DevolucionProducto
+ON Ventas
+after UPDATE 
+AS
+SET NOCOUNT ON;
+DECLARE @Acantidad int, @Bcantidad int, @Idventa INT, @ticket int
+SELECT @Acantidad=Cantidad FROM deleted
+SELECT @Bcantidad=Cantidad FROM inserted
+SELECT @Idventa =IdVenta from inserted
+SELECT @ticket = Ticket from inserted
+IF @Acantidad >=@Bcantidad
+BEGIN
+BEGIN TRY 
+	BEGIN TRANSACTION
+	UPDATE Productos SET Productos.Stock=Productos.Stock+(@Acantidad-@Bcantidad) FROM inserted
+    INNER JOIN Productos ON Productos.idProducto=inserted.idProducto
+    UPDATE Ventas SET Monto=(@Bcantidad*Precio) where IdVenta=@Idventa
+	UPDATE DetalleVenta  SET DetalleVenta.Total=(select sum(Monto) FROM Ventas WHERE Ticket=@ticket) WHERE IdDetalleVenta= @ticket
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+	END CATCH
+END
+GO
 --Update Precio--
 CREATE OR ALTER TRIGGER TR_UpdatePrecio
 ON Productos
@@ -517,7 +542,6 @@ EXEC sp_insertPersonas 'Juan','Pérez','Calle Guadalupe 54','454545','4545454545
 EXEC sp_insertClientes 1
 
 go
-
 
 /*
 
