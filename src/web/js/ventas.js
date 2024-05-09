@@ -121,7 +121,7 @@ function agregarTabla(producto)
     tr.appendChild(thIdCategoria);
 
     const thPrecioCompra = document.createElement("td");
-    thPrecioCompra.textContent = producto.Fecha;
+    thPrecioCompra.textContent = producto.Fecha.substring(0,10);
     tr.appendChild(thPrecioCompra);
 
     const ththPreciVenta = document.createElement("td");
