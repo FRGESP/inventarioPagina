@@ -19,10 +19,8 @@ router.put("/personas/:id", updatePersona);
 router.delete("/personas/:id", deletePersona);
 // //Obetener elemento por nombre
 router.post("/personasNombre/",getNombre);
- router.post("/personas/:id",getPersona);
-// router.get("/productosVista/:id",getProductVista)
-// router.get("/nombresProveedores",getNombresProveedores)
-// router.get("/nombresCategorias",getNombresCategorias)
+
+router.post("/personas/:id",getPersona);
 
 
 export default router;

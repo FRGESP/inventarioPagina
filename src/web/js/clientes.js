@@ -80,43 +80,6 @@ async function crearCliente(){
     
 };
 
-async function obtenerProducto() {
-    div.innerHTML = '';
-    idP = this.getAttribute('editar-id');
-    console.log(idP);
-    const res = await fetch(API + "productosVista/" + idP);
-    if (res.ok) {
-        const resJson = await res.json();
-        crearFormulario(resJson);
-    }
-}
-
-async function editarProducto() {
-    limpiarTabla(tabla);
-    console.log(idP);
-    const res = await fetch(API+"Productos/"+idP,{
-        method : "PUT",
-        headers : {
-            "Content-Type" : "application/json"
-        },
-        body : JSON.stringify({
-            Nombre : document.getElementById("inIdPersona").value,
-            IdCategoria : document.getElementById("inCategoria").value,
-            PrecioCompra : document.getElementById("inPrecioCompra").value,
-            PrecioVenta : document.getElementById("inPrecioVenta").value,
-            Stock : document.getElementById("inStock").value,
-            IdProveedor : document.getElementById("inProveedor").value
-        })
-    });
-    if(res.ok)
-    {
-        encontrarPorId("productosVista/",idP)
-        crearAlerta("success","El producto de ha actualizado con exito");
-    } else {
-        crearAlerta("danger","Categoria no registrada. Vuelva a intentarlo");
-    }
-}
-
 async function encontrarPorId(ruta,id) {
 
     limpiarTabla(tabla);
@@ -192,30 +155,6 @@ function crearFormulario(producto)
 
     div.appendChild(form);
 }
-
-async function obtenerNombre(ruta,select,actual) {
-    const res = await fetch(API+ruta);
-    console.log(actual);
-    if(res.ok)
-    {
-        const resJson = await res.json();
-        resJson.forEach(elemento => {
-            const opcion = document.createElement("option");
-            if(elemento.Nombre == actual) {
-                opcion.setAttribute("selected","");
-            }
-            opcion.value = elemento.Id;
-            opcion.textContent = elemento.Nombre;
-            select.appendChild(opcion);
-        });
-        console.log(resJson);
-    }
-    else{
-        console.log("No hay productos");
-    }
-};
-
-
 
 function agregarTabla(producto)
 {
