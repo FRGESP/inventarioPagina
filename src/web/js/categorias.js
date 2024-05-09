@@ -99,7 +99,7 @@ async function editarCategoria() {
             "Content-Type" : "application/json"
         },
         body : JSON.stringify({
-            Categoria : document.getElementById("inProducto").value
+            Categoria : document.getElementById("inCategoria").value
         })
     });
     if(res.ok)

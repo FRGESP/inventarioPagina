@@ -23,7 +23,7 @@ IdCategoria int foreign key references Categorias(idCategoria) on delete cascade
 PrecioCompra money not null check(PrecioCompra>=0),
 PrecioVenta money not null check(PrecioVenta>=0),
 Stock int default 0 not null check(Stock>=0),
-IdProveedor int foreign key references Proveedores(IdProveedor)
+IdProveedor int foreign key references Proveedores(IdProveedor) on delete cascade
 );
 
 create table Personas(
@@ -40,14 +40,6 @@ IdCliente int not null identity primary key,
 IdPersona int foreign key references Personas(IdPersona) on delete cascade
 );
 
-
-
-create table Empleados(
-IdEmpleado int not null identity primary key,
-IdPersona int foreign key references Personas(IdPersona) on delete cascade,
-Sueldo money not null,
-Estatus varchar(50) check(Estatus IN('Empleado','Despedido','Ausente'))
-);
 
 create table Ventas(
 IdVenta int not null identity primary key,
@@ -80,7 +72,6 @@ select * from Categorias
 select * from Clientes
 select * from DetalleVenta
 select * from Devoluciones
-select * from Empleados
 select * from Personas
 select * from Productos
 select * from Proveedores
@@ -209,17 +200,6 @@ CREATE PROCEDURE sp_insertClientes(
 AS
 BEGIN
     INSERT into Clientes VALUES(@idPersona)
-END
-GO
---PROCEDURE PARA EMPLEADOS
-CREATE PROCEDURE sp_inserteEmpleados(
-	@idPersona int,
-	@Sueldo money,
-	@Estatus VARCHAR(50)
-)
-AS
-BEGIN
-    INSERT INTO Empleados VALUES(@idPersona, @Sueldo, @Estatus)
 END
 GO
 
@@ -453,14 +433,21 @@ go
 
 
 --Update--
-CREATE TRIGGER TR_UpdateProducto
+CREATE or ALTER TRIGGER TR_UpdateProducto
 ON Productos
 FOR UPDATE
 AS
 SET NOCOUNT ON;
 DECLARE @idProducto INT
-SELECT @idProducto=idProducto FROM inserted
-INSERT INTO RegistroProducto VALUES(@idProducto,GETDATE(),'Update',SYSTEM_USER)
+BEGIN TRY 
+	BEGIN TRANSACTION
+	SELECT @idProducto=idProducto FROM inserted
+	INSERT INTO RegistroProducto VALUES(@idProducto,GETDATE(),'Update',SYSTEM_USER)
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+	END CATCH
 GO
 
 --Update Stock--
@@ -605,19 +592,6 @@ SELECT * FROM DetalleVenta
 -------------------------------------TRANSACCIONES-------------------------------------------------------------------
 go
 
-CREATE PROCEDURE sp_TransaccionDetalleVenta (@IdCliente int)
-AS
-BEGIN
-	BEGIN TRY 
-	BEGIN TRANSACTION
-	EXEC sp_DetalleVenta @Idcliente
-	COMMIT
-	END TRY
-	BEGIN CATCH
-		ROLLBACK TRANSACTION
-	END CATCH
-END
-go
 
 CREATE OR ALTER PROCEDURE sp_Factura(@id int)
 AS
