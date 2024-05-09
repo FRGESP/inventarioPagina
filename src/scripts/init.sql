@@ -561,9 +561,9 @@ as
 	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where v.Ticket = 1;
 go
 
-CREATE VIEW vistaTicketProductos
+CREATE OR ALTER VIEW vistaTicketProductos
 as
-	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto;
+	select v.IdVenta ,p.Nombre as Producto, v.Cantidad, v.Precio,v.Monto,v.Ticket  from Ventas as v INNER JOIN Productos as p ON v.IdProducto = p.IdProducto;
 go
 
 CREATE VIEW vistaNombresRegistro
