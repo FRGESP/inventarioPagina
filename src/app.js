@@ -9,6 +9,7 @@ import clientesRoutes from './routes/clientes.route.js'
 import ventasRoutes from './routes/ventas.route.js'
 import registroProductosRoutes from './routes/registroProductos.route.js'
 import PDFTest from './routes/facturasTest.route.js'
+import facturasRoutes from './routes/facturas.route.js'
 import cors from "cors";
 
 
@@ -27,6 +28,7 @@ app.use(clientesRoutes);
 app.use(ventasRoutes);
 app.use(registrosPrecios);
 app.use(PDFTest);
+app.use(facturasRoutes);
 
 app.use(registroProductosRoutes);
 

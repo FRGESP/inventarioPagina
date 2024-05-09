@@ -17,13 +17,4 @@ router.delete("/clientes/:id", deleteClient);
 //Obetener elemento por nombre
 router.post("/clienteNombre",getName);
 
-
-// Vistas
-
-//router.get("/productosVista",getProductsVista);
-//router.get("/productosVista/:id",getProductVista)
-//router.get("/nombresProveedores",getNombresProveedores)
-//router.get("/nombresCategorias",getNombresCategorias)
-
-
 export default router;

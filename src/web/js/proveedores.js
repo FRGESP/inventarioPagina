@@ -23,7 +23,7 @@ async function mostrarTodo() {
         console.log(resJson);
     }
     else{
-        console.log("No hay productos");
+        console.log("No hay proveedores");
     }
 };
 
@@ -124,7 +124,7 @@ async function encontrarPorId(ruta,id) {
         tabla.appendChild(fila);
     }else
     {  
-        crearAlerta("danger","El producto no se ha encontrado. Vuelva a intentarlo");
+        crearAlerta("danger","El proveedor no se ha encontrado. Vuelva a intentarlo");
     }
 };
 
@@ -215,7 +215,7 @@ async function obtenerNombre(ruta,select,actual) {
         console.log(resJson);
     }
     else{
-        console.log("No hay productos");
+        console.log("No hay proveedor");
     }
 };
 

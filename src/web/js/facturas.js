@@ -5,13 +5,14 @@ const tabla = document.getElementById("tabla");
 const div = document.getElementById("divVentana");
 const alertas = document.getElementById("alertas");
 const divCrear = document.getElementById("divCrear");
+const inputTicket = document.getElementById("inputBuscar");
 
 
 API = "http://localhost:3100/";
 
 
 async function mostrarTodo() {
-    const res = await fetch(API+"ventasVista/");
+    const res = await fetch(API+"ticketVista/"+inputTicket.value);
     if(res.ok)
     {
         const resJson = await res.json();
@@ -23,59 +24,11 @@ async function mostrarTodo() {
         console.log(resJson);
     }
     else{
-        console.log("No hay ventas");
-    }
-};
-
-async function mostrarPorIdCliente(id) {
-    limpiarTabla(tabla);
-    const res = await fetch(API+"clientesIDVista/"+id);
-    if(res.ok)
-    {
-        const resJson = await res.json();
+        console.log("No hay registro de ventas");
         limpiarTabla(tabla);
-        resJson.forEach(producto => {
-            const fila = agregarTabla(producto);
-            tabla.appendChild(fila);
-        });
-        console.log(resJson);
-    }
-    else{
-        console.log("No hay ventas de ese cliente");
-        crearAlerta("danger","No hay ventas de ese cliente.");
+        crearAlerta("danger","Factura no encontrada")
     }
 };
-
-
-async function mostrarPorIdVenta(ruta,id) {
-
-    limpiarTabla(tabla);
-    const res = await fetch(API+ruta+id);
-    if(res.ok)
-    {
-        const resJson = await res.json();
-        const fila = agregarTabla(resJson);
-        tabla.appendChild(fila);
-    }else
-    {  
-        crearAlerta("danger","La venta no se ha encontrado. Vuelva a intentarlo");
-    }
-};
-
-async function borrarProducto() {
-    idP = this.getAttribute('borrar-id');
-    const res = await fetch(API+"productos/"+idP, {
-        method : "DELETE",
-        headers : {
-            "Content-Type" : "application/json"
-        }
-    });
-    if(res.ok)
-    {
-        mostrarTodo();
-        crearAlerta("success","El producto se ha eliminado exitosamente");
-    }
-} 
 
 function crearAlerta(tipo,texto){
     const divAlerta = document.createElement("div");
@@ -99,7 +52,6 @@ function crearAlerta(tipo,texto){
     }, 4000);
 }
 
-
 function agregarTabla(producto)
 {
     const tr = document.createElement("tr");
@@ -107,29 +59,28 @@ function agregarTabla(producto)
     tabla.appendChild(tr);
 
     const thID = document.createElement("th");
-    thID.textContent = producto.IdDetalleVenta;
+    thID.textContent = producto.IdVenta;
     thID.setAttribute("scope","row");
-    console.log(producto.IdDetalleVenta);
+    console.log(producto.IdProducto);
     tr.appendChild(thID);
 
     const thProducto = document.createElement("td");
-    thProducto.textContent = producto.Cantidad;
+    thProducto.textContent = producto.Producto;
     tr.appendChild(thProducto);
 
     const thIdCategoria = document.createElement("td");
-    thIdCategoria.textContent = producto.Total;
+    thIdCategoria.textContent = producto.Cantidad;
     tr.appendChild(thIdCategoria);
 
     const thPrecioCompra = document.createElement("td");
-    thPrecioCompra.textContent = producto.Fecha.substring(0,10);
+    thPrecioCompra.textContent = producto.Precio;
     tr.appendChild(thPrecioCompra);
 
     const ththPreciVenta = document.createElement("td");
-    ththPreciVenta.textContent = producto.IdCliente;
+    ththPreciVenta.textContent = producto.Monto;
     tr.appendChild(ththPreciVenta);
 
     return tr;
-
 }
 
 function limpiarTabla(tabla) {
@@ -137,19 +88,4 @@ function limpiarTabla(tabla) {
     filas.forEach(fila => {
         fila.remove();
     });
-}
-
-//Seleccion de buscar por ID
-
-function seleccionID()
-{
-    const eleccion = document.getElementById("selectBuscar").value;
-    const input = document.getElementById("inputBuscar").value;
-    if(eleccion == "IDVenta") {
-        mostrarPorIdVenta("ventasIDVista/",input);
-    }
-    if(eleccion == "IDCliente") {
-        mostrarPorIdCliente(input);
-    }
-    
 }

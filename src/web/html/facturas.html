@@ -1,47 +1,142 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/main.css">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../css/main.css" />
     <script src="../../../node_modules\bootstrap\dist\js\bootstrap.bundle.min.js"></script>
-    <script src="https://kit.fontawesome.com/0caab475fe.js" crossorigin="anonymous"></script>
-    <title>Facturas</title>
-</head>
-<body>
+    <script
+      src="https://kit.fontawesome.com/0caab475fe.js"
+      crossorigin="anonymous"
+    ></script>
+    <title>FacturasTes</title>
+  </head>
+  <body >
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="./inicio.html">Inicio</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="./facturas.html">Facturas</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" href="./ventas.html">Devoluciones</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Tablas
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="./productos.html">Productos</a></li>
-                  <li><a class="dropdown-item" href="./categorias.html">Categorias</a></li>
-                  <li><a class="dropdown-item" href="./proveedores.html">Proveedores</a></li>
-                  <li><a class="dropdown-item" href="./personas.html">Personas</a></li>
-                  <li><a class="dropdown-item" href="./clientes.html">Clientes</a></li>
-                  <li><a class="dropdown-item" href="./ventas.html">Ventas</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="./registroPrecios.html">Registros Precios</a></li>
-                  <li><a class="dropdown-item" href="./registroProductos.html">Registros Productos</a></li>
-                </ul>
-              </li>
-            </ul>
+      <div class="container-fluid">
+        <a class="navbar-brand" href="./inicio.html">Inicio</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="./facturas.html"
+                >Facturas</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="./ventas.html">Devoluciones</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle active"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Tablas
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="./productos.html">Productos</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="./categorias.html"
+                    >Categorias</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="./proveedores.html"
+                    >Proveedores</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="./personas.html">Personas</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="./clientes.html">Clientes</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="./ventas.html">Ventas</a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <a class="dropdown-item" href="./registroPrecios.html"
+                    >Registros Precios</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="./registroProductos.html"
+                    >Registros Productos</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <h1 class="text-center">Facturas</h1>
+   
+    <div id="alertas"></div>
+    
+    <!-- Barra de busqueda -->
+    <div class="container">
+        <div class="row justify-content-center text-center">
+          <div class="col-md-auto">
+            <h3 class="mb-3">Buscar por: </h3>
+          </div>
+          <div class="col-md-auto">
+            <input type="text" class="form-control" placeholder="Ingrese un valor" id="inputBuscar">
+          </div>
+          
+          <div class="col-md-auto">
+            <button type="button" class="btn btn-success" onclick="mostrarTodo()"><i class="fa-solid fa-check"></i></button>
+          </div>
+          <div class="col-md-auto">
+            <h3>||</h3>
+        </div>
+          <div class="col-md-auto">
+            <button id="magia" onclick="SacarPDF()" class="btn btn-warning">Descargar Factura</button>
           </div>
         </div>
-      </nav>
-</body>
+      </div>
+
+      
+<!-- Tabla Principal -->
+<div class="row justify-content-center">
+    <div class="col-md-11">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">IDVenta</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Precio</th>
+            <th scope="col">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="tabla"></tbody>
+      </table>
+    </div>
+  </div>
+
+    <!-- Aqui va el archivo JS -->
+    <script src="../js/facturasTest.js"></script>
+    <script src="../js/facturas.js"></script>
+  </body>
 </html>
