@@ -128,25 +128,3 @@ export const getNombre = async (req,res) => {
     }
     return res.json(result.recordset);
 }
-
-//Se obtienen los nombres de proveedores para la tabla productos
-export const getNombresProveedores =  async (req, res) => {
-    try {
-        const pool = await getConnection();
-    const result = await pool.request().query('select * from NombresProveedores');
-    res.json(result.recordset);
-    }catch(error) {
-        console.error("Error:", error.message);
-    }
-}
-
-//Se obtienen los nombres de las categorias para la tabla productos
-export const getNombresCategorias =  async (req, res) => {
-    try {
-        const pool = await getConnection();
-    const result = await pool.request().query('select * from NombresCategorias');
-    res.json(result.recordset);
-    }catch(error) {
-        console.error("Error:", error.message);
-    }
-}

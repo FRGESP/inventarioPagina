@@ -623,8 +623,6 @@ CREATE OR ALTER PROCEDURE sp_Factura(@id int)
 AS
 BEGIN
 	DECLARE @IdCliente int = (SELECT IdCliente from DetalleVenta where IdDetalleVenta = @id);
-	select v.IdVenta, v.IdProducto, v.Cantidad, v.Precio, v.Ticket, v.Monto, d.Fecha from Ventas as v INNER JOIN DetalleVenta as d on v.Ticket = d.IdDetalleVenta where Ticket = @id;
+	select v.IdVenta, p.IdProducto ,p.Nombre, v.Cantidad, v.Precio, v.Ticket, v.Monto, d.Fecha, d.Total from Ventas as v INNER JOIN DetalleVenta as d on v.Ticket = d.IdDetalleVenta INNER JOIN Productos as p ON v.IdProducto = p.IdProducto where Ticket = @id;
 	select * from facturaClienteDatos where ID = @IdCliente;
 END
-
-

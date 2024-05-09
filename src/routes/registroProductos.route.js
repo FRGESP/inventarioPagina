@@ -4,7 +4,7 @@ import { getAccion, getIDRegistro, getRegistrosVista } from "../controllers/regi
 
 const router = Router();
 
-// Rutas Registros
+// Rutas Registros Productos
 
 router.post("/productosAccion",getAccion);
 router.get("/registrosVista",getRegistrosVista);
